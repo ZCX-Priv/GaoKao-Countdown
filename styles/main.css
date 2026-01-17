@@ -80,6 +80,15 @@ body {
     }
 }
 
+@media (min-width: 2000px), (min-height: 1000px) {
+    .settings-btn {
+        position: fixed;
+        top: auto;
+        bottom: 30px;
+        right: 30px;
+    }
+}
+
 /* Loading Styles */
 .loading-container {
     position: fixed;

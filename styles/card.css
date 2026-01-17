@@ -78,6 +78,10 @@
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
 }
 
+.ms-unit .time-bar {
+    display: none;
+}
+
 .time-value {
     font-size: 4.5rem;
     font-weight: 600;
@@ -204,6 +208,9 @@
     }
     .ms-unit .time-label {
         font-size: 0.7rem;
+    }
+    .ms-unit .time-bar {
+        display: block;
     }
     .time-bar {
         width: 80%;
