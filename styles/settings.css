@@ -84,7 +84,6 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    border-bottom: 1px solid var(--glass-border);
     position: relative;
 }
 
@@ -151,6 +150,8 @@
 .setting-item label:first-child {
     text-align: center;
     min-width: 80px;
+    color: #f5f5f7;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .setting-item input[type="text"],
@@ -166,11 +167,17 @@
     text-align: center;
 }
 
+#target-date::placeholder,
+.setting-item input[type="text"]::placeholder {
+    color: rgba(245, 245, 247, 0.8) !important;
+}
+
 .switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 28px;
+    width: 52px;
+    height: 30px;
+    flex-shrink: 0;
 }
 
 .switch input {
@@ -186,28 +193,30 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: rgba(255, 255, 255, 0.3);
     transition: .4s;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 24px;
-    width: 24px;
+    height: 26px;
+    width: 26px;
     left: 2px;
     bottom: 2px;
-    background-color: white;
+    background-color: #f5f5f7;
     transition: .4s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 input:checked + .slider {
-    background-color: var(--primary-blue);
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
 }
 
 input:checked + .slider:before {
@@ -215,7 +224,7 @@ input:checked + .slider:before {
 }
 
 .slider.round {
-    border-radius: 34px;
+    border-radius: 30px;
 }
 
 .slider.round:before {

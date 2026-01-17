@@ -14,7 +14,7 @@
         targetTime: '09:00',
         bgSource: 'bing',
         bgColor: 'blue',
-        quoteType: []
+        quoteType: ['all']
     };
 
     GaoKao.SettingsManager = class SettingsManager {

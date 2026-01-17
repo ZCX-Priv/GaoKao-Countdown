@@ -204,6 +204,34 @@
                 }
             });
 
+            const quoteAllCheckbox = document.getElementById('quote-all');
+            this.dom.quoteTypeCheckboxes.forEach(checkbox => {
+                if (checkbox.id !== 'quote-all') {
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            quoteAllCheckbox.checked = false;
+                        } else {
+                            const anyChecked = Array.from(this.dom.quoteTypeCheckboxes)
+                                .filter(cb => cb.id !== 'quote-all')
+                                .some(cb => cb.checked);
+                            if (!anyChecked) {
+                                quoteAllCheckbox.checked = true;
+                            }
+                        }
+                    });
+                }
+            });
+
+            quoteAllCheckbox.addEventListener('change', () => {
+                if (quoteAllCheckbox.checked) {
+                    this.dom.quoteTypeCheckboxes.forEach(cb => {
+                        if (cb.id !== 'quote-all') {
+                            cb.checked = false;
+                        }
+                    });
+                }
+            });
+
             const saveHandler = () => {
                 let bgColor = 'blue';
                 for (const radio of this.dom.bgColorRadios) {
