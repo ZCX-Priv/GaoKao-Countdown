@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高考倒计时</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/themes.css">
+    <link rel="stylesheet" href="styles/background.css">
+    <link rel="stylesheet" href="styles/card.css">
+    <link rel="stylesheet" href="styles/settings.css">
+    <link rel="stylesheet" href="styles/notice.css">
+</head>
+<body>
+    <!-- SVG Filters -->
+    <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
+        <defs>
+            <filter id="liquid-filter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Loading Page -->
+    <div id="loading-page" class="loading-container">
+        <div class="loading-content">
+            <div class="clock-icon">
+                <div class="clock-hand hour"></div>
+                <div class="clock-hand minute"></div>
+            </div>
+            <h1 class="handwritten-text">高考倒计时</h1>
+            <p id="loading-text" class="loading-text">加载中...</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app-container hidden">
+        <header class="app-header">
+            <div class="header-decoration"></div>
+            <h1>高考倒计时</h1>
+        </header>
+
+        <main class="main-content">
+            <div id="countdown-card" class="glass-card">
+                <div class="card-header">
+                    <h2 id="countdown-title">距离 XXXX 年高考还有:</h2>
+                </div>
+                <div class="countdown-display">
+                    <div class="time-unit">
+                        <span id="days" class="time-value">---</span>
+                        <span class="time-label">天</span>
+                        <div class="time-bar"></div>
+                    </div>
+                    <div class="time-unit">
+                        <span id="hours" class="time-value">--</span>
+                        <span class="time-label">时</span>
+                        <div class="time-bar"></div>
+                    </div>
+                    <div class="time-unit">
+                        <span id="minutes" class="time-value">--</span>
+                        <span class="time-label">分</span>
+                        <div class="time-bar"></div>
+                    </div>
+                    <div class="time-unit">
+                        <span id="seconds" class="time-value">--</span>
+                        <span class="time-label">秒</span>
+                        <div class="time-bar"></div>
+                    </div>
+                    <div class="time-unit ms-unit hidden" id="ms-container">
+                        <span id="milliseconds" class="time-value sm">---</span>
+                        <span class="time-label">毫秒</span>
+                        <div class="time-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quote-container" class="quote-card glass-card-sm">
+                <p id="quote-content">正在加载励志语录...</p>
+                <span id="quote-author">---</span>
+            </div>
+        </main>
+
+        <button id="settings-btn" class="settings-btn" aria-label="设置">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal-container genie-effect">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <button id="close-settings" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="preferences">偏好</button>
+                <button class="tab-btn" data-tab="target">目标</button>
+            </div>
+            <div class="modal-content">
+                <div id="tab-preferences" class="tab-pane active">
+                    <div class="setting-item">
+                        <label>主题模式</label>
+                        <select id="theme-mode">
+                            <option value="system">跟随系统</option>
+                            <option value="light">白天模式</option>
+                            <option value="dark">夜间模式</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>背景来源</label>
+                        <select id="bg-source">
+                            <option value="gradient">默认渐变</option>
+                            <option value="color">纯色背景</option>
+                            <option value="bing">每日一图</option>
+                        </select>
+                    </div>
+                    <div class="setting-item" id="bg-color-container" style="display: none;">
+                        <label>背景颜色</label>
+                        <div class="color-picker">
+                            <input type="radio" name="bg-color" value="blue" id="bg-blue" checked>
+                            <label for="bg-blue" class="color-option blue"></label>
+                            <input type="radio" name="bg-color" value="orange" id="bg-orange">
+                            <label for="bg-orange" class="color-option orange"></label>
+                            <input type="radio" name="bg-color" value="purple" id="bg-purple">
+                            <label for="bg-purple" class="color-option purple"></label>
+                            <input type="radio" name="bg-color" value="green" id="bg-green">
+                            <label for="bg-green" class="color-option green"></label>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>语录类型</label>
+                        <div class="checkbox-group" id="quote-type-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="a">
+                                <span>动画</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="b">
+                                <span>漫画</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="c">
+                                <span>游戏</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="d">
+                                <span>文学</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="i">
+                                <span>诗词</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="j">
+                                <span>网易云</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="k">
+                                <span>哲学</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="quote-type" value="l">
+                                <span>抖机灵</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>显示毫秒</label>
+                        <label class="switch">
+                            <input type="checkbox" id="show-ms">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                     <div class="setting-item">
+                        <label>下雪特效</label>
+                        <label class="switch">
+                            <input type="checkbox" id="snow-effect">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>液态玻璃</label>
+                        <label class="switch">
+                            <input type="checkbox" id="liquid-effect">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>开启动画</label>
+                        <label class="switch">
+                            <input type="checkbox" id="enable-animation">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div id="tab-target" class="tab-pane">
+                    <div class="setting-item">
+                        <label>事件名称</label>
+                        <input type="text" id="event-name" placeholder="高考">
+                    </div>
+                    <div class="setting-item">
+                        <label>目标日期</label>
+                        <input type="text" id="target-date" placeholder="年/月/日" onfocus="this.type='date'" onblur="this.type='text'">
+                    </div>
+                    <div class="setting-item">
+                        <label>目标时间</label>
+                        <input type="time" id="target-time" value="09:00">
+                    </div>
+                    <p class="setting-hint">留空将使用默认高考时间（6月7日 9:00）</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notice Container -->
+    <div id="notice-container"></div>
+
+    <!-- Scripts -->
+    <script src="scripts/settings.js"></script>
+    <script src="scripts/time.js"></script>
+    <script src="scripts/loading.js"></script>
+    <script src="scripts/inspire.js"></script>
+    <script src="scripts/notice.js"></script>
+    <script src="scripts/snow.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

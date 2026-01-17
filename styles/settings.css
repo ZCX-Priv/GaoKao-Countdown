@@ -1,0 +1,311 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    transform-origin: center center;
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+}
+
+.modal-overlay:not(.hidden) .modal-container {
+    animation: genieShow 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes genieShow {
+    0% {
+        opacity: 0;
+        clip-path: inset(0 0 100% 0);
+        transform: scale(0.8) translateY(50%);
+    }
+    30% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-overlay.hidden .modal-container {
+    animation: genieHide 0.4s cubic-bezier(0.5, 0, 1, 0.5) forwards;
+}
+
+@keyframes genieHide {
+    0% {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        clip-path: inset(100% 0 0 0);
+        transform: scale(0.8) translateY(50%);
+    }
+}
+
+/* Disable animation mode */
+.modal-overlay.no-animation .modal-container {
+    animation: none !important;
+    opacity: 1 !important;
+    clip-path: inset(0 0 0 0) !important;
+    transform: scale(1) translateY(0) !important;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--glass-border);
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+    text-align: center;
+}
+
+.close-btn {
+    position: absolute;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.modal-tabs {
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px;
+    gap: 10px;
+}
+
+.tab-btn {
+    padding: 8px 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    opacity: 0.6;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.tab-btn.active {
+    opacity: 1;
+    background: rgba(0, 122, 255, 0.2);
+    font-weight: bold;
+}
+
+.modal-content {
+    padding: 20px;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.3s;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.setting-item label:first-child {
+    text-align: center;
+    min-width: 80px;
+}
+
+.setting-item input[type="text"],
+.setting-item input[type="number"],
+.setting-item input[type="date"],
+.setting-item input[type="time"],
+.setting-item select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    text-align: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background-color: var(--primary-blue);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-blue);
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.color-picker {
+    display: flex;
+    gap: 10px;
+}
+
+.color-picker input[type="radio"] {
+    display: none;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.blue {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.color-option.orange {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.color-option.purple {
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+}
+
+.color-option.green {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+}
+
+.color-picker input[type="radio"]:checked + .color-option {
+    border-color: var(--primary-color);
+    transform: scale(1.15);
+}
+
+.setting-hint {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    margin-top: 10px;
+    font-style: italic;
+    text-align: center;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 280px;
+    justify-content: flex-end;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.checkbox-label:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.checkbox-label input[type="checkbox"]:checked + span {
+    color: var(--primary-color);
+    font-weight: bold;
+}

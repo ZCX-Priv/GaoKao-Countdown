@@ -1,0 +1,149 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.app-header {
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.app-header h1 {
+    font-family: "Xingkai SC", "STXingkai", "KaiTi", "华文行楷", cursive;
+    font-size: 3rem;
+    font-weight: normal;
+    letter-spacing: 4px;
+}
+
+.settings-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    opacity: 0.7;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 20;
+}
+
+.settings-btn:hover {
+    opacity: 1;
+    transform: rotate(30deg);
+}
+
+@media (min-width: 768px) {
+    .settings-btn {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Loading Styles */
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.5s ease-out;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.clock-icon {
+    width: 80px;
+    height: 80px;
+    border: 4px solid var(--text-color);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    position: relative;
+}
+
+.clock-hand {
+    position: absolute;
+    background: var(--text-color);
+    transform-origin: bottom center;
+    left: 50%;
+    bottom: 50%;
+    transform: translateX(-50%);
+}
+
+.hour {
+    width: 4px;
+    height: 25px;
+    animation: spin 4s linear infinite;
+}
+
+.minute {
+    width: 3px;
+    height: 35px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(360deg); }
+}
+
+.handwritten-text {
+    font-family: "Xingkai SC", "STXingkai", "KaiTi", "华文行楷", cursive;
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    animation: fadeIn 2s ease-in;
+}
+
+.loading-text {
+    font-size: 1.3rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
