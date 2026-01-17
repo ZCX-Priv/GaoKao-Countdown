@@ -100,21 +100,21 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--text-color);
+    color: #f5f5f7;
 }
 
 .modal-tabs {
     display: flex;
     justify-content: center;
-    padding: 10px 20px;
+    margin-bottom: 25px;
     gap: 10px;
 }
 
-.tab-btn {
+.modal-tabs .tab-btn {
     padding: 8px 24px;
     border: none;
     background: transparent;
-    color: var(--text-color);
+    color: #f5f5f7;
     cursor: pointer;
     opacity: 0.6;
     border-radius: 8px;
@@ -162,7 +162,7 @@
     border-radius: 8px;
     border: 1px solid var(--glass-border);
     background: rgba(255, 255, 255, 0.1);
-    color: var(--text-color);
+    color: #f5f5f7;
     text-align: center;
 }
 

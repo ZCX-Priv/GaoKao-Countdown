@@ -282,7 +282,7 @@
         }
 
         updateUI(data) {
-            this.dom.days.textContent = String(data.days).padStart(3, '0');
+            this.dom.days.textContent = String(data.days).padStart(2, '0');
             this.dom.hours.textContent = String(data.hours).padStart(2, '0');
             this.dom.minutes.textContent = String(data.minutes).padStart(2, '0');
             this.dom.seconds.textContent = String(data.seconds).padStart(2, '0');
@@ -294,6 +294,18 @@
             if (this.dom.countdownTitle.textContent !== data.statusText) {
                 this.dom.countdownTitle.textContent = data.statusText;
             }
+            
+            const timeValues = [this.dom.days, this.dom.hours, this.dom.minutes, this.dom.seconds, this.dom.milliseconds].filter(el => el);
+            const isEnded = data.statusText.includes('结束');
+            
+            timeValues.forEach(el => {
+                el.classList.remove('urgent', 'ended');
+                if (isEnded) {
+                    el.classList.add('ended');
+                } else if (data.days < 60) {
+                    el.classList.add('urgent');
+                }
+            });
         }
     }
 

@@ -23,7 +23,7 @@
     justify-content: space-between;
     align-items: center;
     animation: slideDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    color: var(--text-color);
+    color: #f5f5f7;
 }
 
 .notice-close {
@@ -32,7 +32,7 @@
     font-size: 1.2rem;
     margin-left: 10px;
     cursor: pointer;
-    color: var(--text-color);
+    color: #f5f5f7;
     opacity: 0.5;
 }
 
