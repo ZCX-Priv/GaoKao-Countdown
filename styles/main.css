@@ -53,6 +53,16 @@ body {
     margin-bottom: 10px;
 }
 
+@media (max-width: 767px) {
+    .app-header h1 {
+        font-size: 4rem !important;
+    }
+    .settings-btn {
+        width: 22px !important;
+        height: 22px !important;
+    }
+}
+
 .settings-btn {
     position: absolute;
     top: 15px;
@@ -75,8 +85,8 @@ body {
 
 @media (min-width: 768px) {
     .settings-btn {
-        width: 28px;
-        height: 28px;
+        width: 32px !important;
+        height: 32px !important;
     }
 }
 
