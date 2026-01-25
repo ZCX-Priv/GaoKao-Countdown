@@ -1,6 +1,6 @@
 <div align="center">
 
-  ![高考倒计时 Logo](logo.svg)
+<img src="logo.svg" alt="高考倒计时 Logo" width="100" height="100">
 
   <h1 style="font-size: 3em; font-weight: bold; margin: 20px 0; color: #f5f5f7; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">高考倒计时</h1>
 
