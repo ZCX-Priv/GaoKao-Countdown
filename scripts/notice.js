@@ -9,6 +9,20 @@
         show(message, duration = 3000) {
             const bubble = document.createElement('div');
             bubble.className = 'notice-bubble';
+            
+            // Check if liquid mode is active directly from localStorage to avoid async issues
+            try {
+                const stored = localStorage.getItem('gaokao_countdown_settings');
+                if (stored) {
+                    const settings = JSON.parse(stored);
+                    if (settings.liquidEffect) {
+                        bubble.classList.add('liquid-mode');
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to read settings for notice style:', e);
+            }
+
             bubble.innerHTML = `
                 <span>${message}</span>
                 <button class="notice-close">&times;</button>

@@ -7,9 +7,22 @@
         constructor() {
             this.overlay = document.getElementById('liquid-overlay');
             this.clipPath = document.getElementById('cards-clip');
-            this.cards = document.querySelectorAll('.glass-card, .glass-card-sm, .quote-card');
             this.rafId = null;
             this.isRunning = false;
+        }
+        
+        getCards() {
+             // Dynamically fetch visible cards including modal if active
+             const cards = Array.from(document.querySelectorAll('.glass-card, .glass-card-sm, .quote-card, .notice-bubble'));
+             const modal = document.querySelector('.modal-container');
+             // Only add modal if it's visible (closest overlay not hidden) AND not closing
+             if (modal) {
+                 const overlay = modal.closest('.modal-overlay');
+                 if (overlay && !overlay.classList.contains('hidden') && !overlay.classList.contains('closing')) {
+                     cards.push(modal);
+                 }
+             }
+             return cards;
         }
 
         start() {
@@ -37,7 +50,8 @@
             }
 
             // Create new rects for each visible card
-            this.cards.forEach(card => {
+            const cards = this.getCards();
+            cards.forEach(card => {
                 const rect = card.getBoundingClientRect();
                 if (rect.width > 0 && rect.height > 0) {
                     const svgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -210,9 +224,19 @@
             if (settings.liquidEffect) {
                 this.liquidManager.start();
                 this.dom.glassCards.forEach(card => card.classList.add('liquid-mode'));
+                if (this.dom.settingsModal.querySelector('.modal-container')) {
+                    this.dom.settingsModal.querySelector('.modal-container').classList.add('liquid-mode');
+                }
+                // Update any existing notices
+                document.querySelectorAll('.notice-bubble').forEach(n => n.classList.add('liquid-mode'));
             } else {
                 this.liquidManager.stop();
                 this.dom.glassCards.forEach(card => card.classList.remove('liquid-mode'));
+                if (this.dom.settingsModal.querySelector('.modal-container')) {
+                    this.dom.settingsModal.querySelector('.modal-container').classList.remove('liquid-mode');
+                }
+                // Update any existing notices
+                document.querySelectorAll('.notice-bubble').forEach(n => n.classList.remove('liquid-mode'));
             }
 
             // Clean up inline filters just in case
@@ -267,6 +291,7 @@
             const isAnimationEnabled = () => this.settingsManager.getSettings().enableAnimation;
             
             this.dom.settingsBtn.addEventListener('click', () => {
+                this.dom.settingsModal.classList.remove('closing'); // Reset closing state if any
                 if (isAnimationEnabled()) {
                     this.dom.settingsModal.classList.remove('hidden');
                 } else {
@@ -275,15 +300,31 @@
                 }
             });
 
-            this.dom.closeSettings.addEventListener('click', () => {
-                this.dom.settingsModal.classList.add('hidden');
-                this.dom.settingsModal.classList.remove('no-animation');
-            });
+            const closeSettingsHandler = () => {
+                if (!isAnimationEnabled()) {
+                    this.dom.settingsModal.classList.add('hidden');
+                    this.dom.settingsModal.classList.remove('no-animation');
+                    return;
+                }
+
+                this.dom.settingsModal.classList.add('closing');
+                
+                const container = this.dom.settingsModal.querySelector('.modal-container');
+                const onAnimationEnd = () => {
+                    this.dom.settingsModal.classList.remove('closing');
+                    this.dom.settingsModal.classList.add('hidden');
+                    this.dom.settingsModal.classList.remove('no-animation'); // Cleanup
+                    container.removeEventListener('animationend', onAnimationEnd);
+                };
+                
+                container.addEventListener('animationend', onAnimationEnd, { once: true });
+            };
+
+            this.dom.closeSettings.addEventListener('click', closeSettingsHandler);
 
             this.dom.settingsModal.addEventListener('click', (e) => {
                 if (e.target === this.dom.settingsModal) {
-                    this.dom.settingsModal.classList.add('hidden');
-                    this.dom.settingsModal.classList.remove('no-animation');
+                    closeSettingsHandler();
                 }
             });
 
