@@ -11,7 +11,15 @@
             this.quoteManager = new QuoteManager();
             this.noticeManager = new NoticeManager();
             this.snowManager = new SnowManager();
-            
+
+            this.previousValues = {
+                days: null,
+                hours: null,
+                minutes: null,
+                seconds: null,
+                milliseconds: null
+            };
+
             this.dom = {
                 app: document.getElementById('app'),
                 countdownTitle: document.getElementById('countdown-title'),
@@ -314,18 +322,18 @@
             this.dom.hours.textContent = String(data.hours).padStart(2, '0');
             this.dom.minutes.textContent = String(data.minutes).padStart(2, '0');
             this.dom.seconds.textContent = String(data.seconds).padStart(2, '0');
-            
+
             if (this.dom.milliseconds) {
                 this.dom.milliseconds.textContent = String(data.milliseconds).padStart(3, '0');
             }
-            
+
             if (this.dom.countdownTitle.textContent !== data.statusText) {
                 this.dom.countdownTitle.textContent = data.statusText;
             }
-            
+
             const timeValues = [this.dom.days, this.dom.hours, this.dom.minutes, this.dom.seconds, this.dom.milliseconds].filter(el => el);
             const isEnded = data.statusText.includes('结束');
-            
+
             timeValues.forEach(el => {
                 el.classList.remove('urgent', 'ended');
                 if (isEnded) {
@@ -334,6 +342,41 @@
                     el.classList.add('urgent');
                 }
             });
+
+            if (this.settingsManager.getSettings().enableAnimation) {
+                this.animateChangedValues(data);
+            }
+        }
+
+        animateChangedValues(data) {
+            const valueMap = {
+                days: data.days,
+                hours: data.hours,
+                minutes: data.minutes,
+                seconds: data.seconds,
+                milliseconds: data.milliseconds
+            };
+
+            const elements = {
+                days: this.dom.days,
+                hours: this.dom.hours,
+                minutes: this.dom.minutes,
+                seconds: this.dom.seconds,
+                milliseconds: this.dom.milliseconds
+            };
+
+            Object.keys(valueMap).forEach(key => {
+                const currentValue = valueMap[key];
+                const element = elements[key];
+
+                if (this.previousValues[key] !== currentValue) {
+                    element.classList.remove('bounce');
+                    void element.offsetWidth;
+                    element.classList.add('bounce');
+                }
+            });
+
+            this.previousValues = { ...valueMap };
         }
     }
 

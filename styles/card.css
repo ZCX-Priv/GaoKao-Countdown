@@ -146,11 +146,12 @@
     border: 1px solid var(--glass-border);
     width: fit-content;
     min-width: 200px;
-    max-width: 95%;
+    max-width: calc(100% - 40px);
     text-align: center;
     position: relative;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     display: inline-block;
+    box-sizing: border-box;
 }
 
 .glass-card-sm {
@@ -163,6 +164,9 @@
     margin-bottom: 12px;
     line-height: 1.6;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 #quote-author {
@@ -234,4 +238,23 @@
     #quote-author {
         font-size: 0.95rem;
     }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.08);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    75% {
+        transform: scale(1.03);
+    }
+}
+
+.bounce {
+    animation: bounce 0.3s ease;
 }
