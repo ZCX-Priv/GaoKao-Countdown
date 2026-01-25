@@ -14,12 +14,19 @@
     <!-- SVG Filters -->
     <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
         <defs>
-            <filter id="liquid-filter">
-                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" />
+            <filter id="liquid-filter" x="-50%" y="-50%" width="200%" height="200%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+                <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+                <feDisplacementMap in="SourceGraphic" in2="blurred" scale="77" xChannelSelector="R" yChannelSelector="G" />
             </filter>
+            <clipPath id="cards-clip">
+                <!-- Rects will be injected by JS -->
+            </clipPath>
         </defs>
     </svg>
+
+    <!-- Global Liquid Overlay -->
+    <div id="liquid-overlay"></div>
 
     <!-- Loading Page -->
     <div id="loading-page" class="loading-container">

@@ -24,6 +24,28 @@
     --glass-border: var(--glass-border-light);
 }
 
+/* Global Liquid Overlay */
+#liquid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 5;
+    pointer-events: none;
+    background-image: inherit; /* Will be set by JS or inherit from body if possible */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    filter: url(#liquid-filter);
+    clip-path: url(#cards-clip);
+    display: none; /* Hidden by default */
+}
+
+#liquid-overlay.active {
+    display: block;
+}
+
 /* Dark Mode */
 [data-theme="dark"] {
     --bg-color: var(--bg-dark);

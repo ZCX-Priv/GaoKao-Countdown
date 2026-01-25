@@ -12,6 +12,7 @@
     position: relative;
     z-index: 1;
     overflow: hidden;
+    isolation: isolate;
 }
 
 /* Gradient Border Logic */
@@ -34,16 +35,16 @@
     pointer-events: none;
 }
 
-/* Add a subtle "Liquid" wobble if SVG filter is available */
-@supports (filter: url('#liquid-filter')) {
-    .glass-card {
-        /* filter: url('#liquid-filter');  */
-        /* Note: Applying displacement to the whole card might make text unreadable. 
-           Usually better to apply to a background pseudo-element. 
-           For now, let's keep it clean glassmorphism as per modern standards 
-           unless the user insists on strong distortion. */
-    }
+/* Liquid Glass Effect - Cleaned up */
+.glass-card.liquid-mode,
+.quote-card.liquid-mode {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    /* Overlay handles the visual effect now */
 }
+
+/* Pseudo-element removed as effect is now global */
 
 .card-header {
     margin-bottom: 30px;
@@ -152,6 +153,8 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     display: inline-block;
     box-sizing: border-box;
+    isolation: isolate;
+    overflow: hidden;
 }
 
 .glass-card-sm {

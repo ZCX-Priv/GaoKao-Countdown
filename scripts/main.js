@@ -3,6 +3,68 @@
 
     const { SettingsManager, Countdown, LoadingManager, QuoteManager, NoticeManager, SnowManager } = GaoKao;
 
+    class LiquidManager {
+        constructor() {
+            this.overlay = document.getElementById('liquid-overlay');
+            this.clipPath = document.getElementById('cards-clip');
+            this.cards = document.querySelectorAll('.glass-card, .glass-card-sm, .quote-card');
+            this.rafId = null;
+            this.isRunning = false;
+        }
+
+        start() {
+            if (this.isRunning) return;
+            this.isRunning = true;
+            this.overlay.classList.add('active');
+            this.update();
+        }
+
+        stop() {
+            this.isRunning = false;
+            this.overlay.classList.remove('active');
+            if (this.rafId) {
+                cancelAnimationFrame(this.rafId);
+                this.rafId = null;
+            }
+        }
+
+        update() {
+            if (!this.isRunning) return;
+
+            // Clear existing rects
+            while (this.clipPath.firstChild) {
+                this.clipPath.removeChild(this.clipPath.firstChild);
+            }
+
+            // Create new rects for each visible card
+            this.cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    const svgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    svgRect.setAttribute('x', rect.left);
+                    svgRect.setAttribute('y', rect.top);
+                    svgRect.setAttribute('width', rect.width);
+                    svgRect.setAttribute('height', rect.height);
+                    svgRect.setAttribute('rx', '20'); // Matches border-radius
+                    svgRect.setAttribute('ry', '20');
+                    this.clipPath.appendChild(svgRect);
+                }
+            });
+
+            this.rafId = requestAnimationFrame(this.update.bind(this));
+        }
+
+        setBackground(style) {
+            // Copy relevant background properties from an element style or string
+            // For simplicity, we assume we receive the final background string or logic here
+            // But actually, we should just sync with document.body.style
+            
+            // In this specific app structure, body background is set inline.
+            // So we can just copy it.
+            this.overlay.style.backgroundImage = document.body.style.backgroundImage;
+        }
+    }
+
     class App {
         constructor() {
             this.settingsManager = new SettingsManager();
@@ -11,6 +73,7 @@
             this.quoteManager = new QuoteManager();
             this.noticeManager = new NoticeManager();
             this.snowManager = new SnowManager();
+            this.liquidManager = new LiquidManager();
 
             this.previousValues = {
                 days: null,
@@ -143,24 +206,36 @@
                 this.snowManager.stop();
             }
 
+            // Toggle Liquid Effect
             if (settings.liquidEffect) {
-                this.dom.glassCards.forEach(card => {
-                    card.style.filter = 'url(#liquid-filter)';
-                });
+                this.liquidManager.start();
+                this.dom.glassCards.forEach(card => card.classList.add('liquid-mode'));
             } else {
-                this.dom.glassCards.forEach(card => {
-                    card.style.filter = '';
-                });
+                this.liquidManager.stop();
+                this.dom.glassCards.forEach(card => card.classList.remove('liquid-mode'));
             }
+
+            // Clean up inline filters just in case
+            this.dom.glassCards.forEach(card => {
+                card.style.filter = '';
+            });
+
+            const updateOverlayBg = () => {
+                if (settings.liquidEffect) {
+                    this.liquidManager.setBackground();
+                }
+            };
 
             if (settings.bgSource === 'bing') {
                 const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
                 const img = new Image();
                 img.onload = () => {
                     document.body.style.backgroundImage = `url('${bgUrl}')`;
+                    updateOverlayBg();
                 };
                 img.onerror = () => {
                     document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                    updateOverlayBg();
                 };
                 img.src = bgUrl;
                 document.body.style.backgroundSize = 'cover';
@@ -177,11 +252,13 @@
                 document.body.style.backgroundSize = 'cover';
                 document.body.style.backgroundPosition = 'center';
                 document.body.style.backgroundAttachment = 'fixed';
+                updateOverlayBg();
             } else {
                 document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
                 document.body.style.backgroundSize = 'cover';
                 document.body.style.backgroundPosition = 'center';
                 document.body.style.backgroundAttachment = 'fixed';
+                updateOverlayBg();
             }
         }
 
