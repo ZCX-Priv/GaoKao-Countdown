@@ -1,18 +1,30 @@
-<h1 style="text-align: center;">高考倒计时</h1>
-
-<!-- Logo -->
 <div align="center">
-  <svg width="80" height="80" viewBox="0 0 80 80">
-    <circle cx="40" cy="40" r="38" stroke="#f5f5f7" stroke-width="4" fill="none"/>
-    <line x1="40" y1="40" x2="40" y2="15" stroke="#f5f5f7" stroke-width="4" stroke-linecap="round"/>
-    <line x1="40" y1="40" x2="55" y2="40" stroke="#f5f5f7" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="40" cy="40" r="3" fill="#f5f5f7"/>
+
+<a>
+  <svg width="100" height="100" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#f5f5f7" stroke-width="5"/>
+    <line x1="50" y1="50" x2="50" y2="25" stroke="#f5f5f7" stroke-width="4" stroke-linecap="round" transform="rotate(0 50 50)">
+      <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="4s" repeatCount="indefinite"/>
+    </line>
+    <line x1="50" y1="50" x2="50" y2="15" stroke="#f5f5f7" stroke-width="3" stroke-linecap="round" transform="rotate(0 50 50)">
+      <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
+    </line>
+    <circle cx="50" cy="50" r="4" fill="#f5f5f7"/>
   </svg>
+  </a>
+  
+  <h1 style="font-size: 3em; font-weight: bold; margin: 20px 0; color: #f5f5f7; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">高考倒计时</h1>
+
+  <p style="font-size: 1.2em; color: #f5f5f7; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">一款专为高三学生设计的倒计时工具，帮助用户直观地感知距离高考的时间，提供励志语录和个性化设置，营造专注备考的氛围。</p>
 </div>
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![HTML5](https://img.shields.io/badge/html5-orange.svg)
+![CSS3](https://img.shields.io/badge/css3-blue.svg)
+![JavaScript](https://img.shields.io/badge/javascript-yellow.svg)
 
-## 项目介绍
+[功能特性](#-功能特性) · [快速开始](#-快速开始) · [项目结构](#-项目结构) · [技术栈](#-技术栈) · [配置说明](#-配置说明)
 
-高考倒计时是一款专为高三学生设计的倒计时工具，帮助用户直观地感知距离高考的时间，提供励志语录和个性化设置，营造专注备考的氛围。
+</div>
 
 ### 主要特性
 
