@@ -4,7 +4,7 @@
 
   <h1 style="font-size: 3em; font-weight: bold; margin: 20px 0; color: #f5f5f7; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">高考倒计时</h1>
 
-  <p style="font-size: 1.2em; color: #f5f5f7; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">一款专为高三学生设计的倒计时工具，帮助用户直观地感知距离高考的时间，提供励志语录和个性化设置，营造专注备考的氛围。</p>
+  <p style="font-size: 1.2em; color: #f5f5f7; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">一款专为高三学生设计的倒计时工具，帮助学生直观地感知距离高考的时间，提供励志语录和个性化设置，营造专注备考的氛围。</p>
 
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)

@@ -80,6 +80,10 @@
     display: none;
 }
 
+.ms-unit {
+    min-width: 70px;
+}
+
 .time-value {
     font-size: 4.5rem;
     font-weight: 600;
