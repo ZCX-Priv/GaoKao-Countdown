@@ -154,7 +154,15 @@
             }
 
             if (settings.bgSource === 'bing') {
-                document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
+                const img = new Image();
+                img.onload = () => {
+                    document.body.style.backgroundImage = `url('${bgUrl}')`;
+                };
+                img.onerror = () => {
+                    document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                };
+                img.src = bgUrl;
                 document.body.style.backgroundSize = 'cover';
                 document.body.style.backgroundPosition = 'center';
                 document.body.style.backgroundAttachment = 'fixed';
@@ -170,7 +178,10 @@
                 document.body.style.backgroundPosition = 'center';
                 document.body.style.backgroundAttachment = 'fixed';
             } else {
-                document.body.style.backgroundImage = '';
+                document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
             }
         }
 
