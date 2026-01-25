@@ -33,7 +33,7 @@
 
         fetchQuote() {
             let url = 'https://v1.hitokoto.cn/?encode=json';
-            if (this.currentTypes.length > 0) {
+            if (this.currentTypes.length > 0 && !this.currentTypes.includes('all')) {
                 this.currentTypes.forEach(t => {
                     url += `&c=${t}`;
                 });
