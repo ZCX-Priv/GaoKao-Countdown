@@ -1,6 +1,7 @@
 <div align="center">
 
 <a>
+
   <svg width="100" height="100" viewBox="0 0 100 100">
     <circle cx="50" cy="50" r="46" fill="none" stroke="#f5f5f7" stroke-width="5"/>
     <line x1="50" y1="50" x2="50" y2="25" stroke="#f5f5f7" stroke-width="4" stroke-linecap="round" transform="rotate(0 50 50)">
@@ -11,18 +12,20 @@
     </line>
     <circle cx="50" cy="50" r="4" fill="#f5f5f7"/>
   </svg>
+
   </a>
   
   <h1 style="font-size: 3em; font-weight: bold; margin: 20px 0; color: #f5f5f7; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">高考倒计时</h1>
 
   <p style="font-size: 1.2em; color: #f5f5f7; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">一款专为高三学生设计的倒计时工具，帮助用户直观地感知距离高考的时间，提供励志语录和个性化设置，营造专注备考的氛围。</p>
 </div>
+
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![HTML5](https://img.shields.io/badge/html5-orange.svg)
 ![CSS3](https://img.shields.io/badge/css3-blue.svg)
 ![JavaScript](https://img.shields.io/badge/javascript-yellow.svg)
 
-[功能特性](#-功能特性) · [快速开始](#-快速开始) · [项目结构](#-项目结构) · [技术栈](#-技术栈) · [配置说明](#-配置说明)
+[主要特性](#主要特性) · [技术实现](#技术实现) · [项目结构](#项目结构) · [功能详解](#功能详解) · [使用方法](#使用方法) · [浏览器兼容性](#浏览器兼容性) · [开发说明](#开发说明) · [核心模块说明](#核心模块说明) · [许可证](#许可证) · [致谢](#致谢)
 
 </div>
 
