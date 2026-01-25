@@ -124,7 +124,6 @@
     display: flex;
     justify-content: center;
     margin-bottom: 25px;
-    gap: 10px;
     flex-shrink: 0;
 }
 
@@ -138,6 +137,7 @@
     border-radius: 8px;
     transition: all 0.2s;
     font-size: 14px;
+    margin: 0 5px;
 }
 
 .tab-btn.active {
@@ -271,7 +271,6 @@ input:checked + .slider:before {
 
 .color-picker {
     display: flex;
-    gap: 10px;
 }
 
 .color-picker input[type="radio"] {
@@ -285,6 +284,7 @@ input:checked + .slider:before {
     cursor: pointer;
     border: 2px solid transparent;
     transition: transform 0.2s, border-color 0.2s;
+    margin: 0 5px;
 }
 
 .color-option:hover {
@@ -323,15 +323,14 @@ input:checked + .slider:before {
 .checkbox-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
     max-width: 280px;
     justify-content: flex-end;
+    margin: -4px;
 }
 
 .checkbox-label {
     display: flex;
     align-items: center;
-    gap: 4px;
     cursor: pointer;
     font-size: 0.85rem;
     padding: 4px 8px;
@@ -339,6 +338,7 @@ input:checked + .slider:before {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid transparent;
     transition: all 0.2s;
+    margin: 4px;
 }
 
 .checkbox-label:hover {

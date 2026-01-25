@@ -30,21 +30,17 @@
        linear-gradient(#fff 0 0) content-box, 
        linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
-    mask-composite: exclude;
     z-index: -1;
     pointer-events: none;
 }
 
-/* Liquid Glass Effect - Cleaned up */
+/* Liquid Glass Effect */
 .glass-card.liquid-mode,
 .quote-card.liquid-mode {
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    /* Overlay handles the visual effect now */
 }
-
-/* Pseudo-element removed as effect is now global */
 
 .card-header {
     margin-bottom: 30px;
@@ -60,8 +56,8 @@
 .countdown-display {
     display: flex;
     justify-content: center;
-    gap: 35px;
     flex-wrap: wrap;
+    margin: -10px 0;
 }
 
 .time-unit {
@@ -69,6 +65,7 @@
     flex-direction: column;
     align-items: center;
     min-width: 90px;
+    margin: 10px 17.5px;
 }
 
 .time-bar {
@@ -184,7 +181,7 @@
     .countdown-display {
         flex-wrap: wrap;
         justify-content: center;
-        gap: 15px;
+        margin: -5px 0;
     }
     .time-unit:first-child {
         width: 100%;
