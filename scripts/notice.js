@@ -6,9 +6,12 @@
             this.container = document.getElementById('notice-container');
         }
 
-        show(message, duration = 3000) {
+        show(message, type = 'info', duration = 3000) {
             const bubble = document.createElement('div');
             bubble.className = 'notice-bubble';
+            if (type === 'error') {
+                bubble.classList.add('error');
+            }
             
             // Check if liquid mode is active directly from localStorage to avoid async issues
             try {

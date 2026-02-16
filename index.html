@@ -86,6 +86,11 @@
             </div>
         </main>
 
+        <button id="fullscreen-btn" class="fullscreen-btn" aria-label="全屏">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+        </button>
         <button id="settings-btn" class="settings-btn" aria-label="设置">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"></circle>
@@ -109,11 +114,41 @@
                 <div id="tab-preferences" class="tab-pane active">
                     <div class="setting-item">
                         <label>主题模式</label>
-                        <select id="theme-mode">
-                            <option value="system">跟随系统</option>
-                            <option value="light">白天模式</option>
-                            <option value="dark">夜间模式</option>
-                        </select>
+                        <div class="theme-icons" id="theme-mode">
+                            <button type="button" class="theme-icon-btn" data-value="system" title="跟随系统">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 2a10 10 0 0 1 0 20z"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="theme-icon-btn" data-value="light" title="白天模式">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="5"/>
+                                    <line x1="12" y1="1" x2="12" y2="3"/>
+                                    <line x1="12" y1="21" x2="12" y2="23"/>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                    <line x1="1" y1="12" x2="3" y2="12"/>
+                                    <line x1="21" y1="12" x2="23" y2="12"/>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="theme-icon-btn" data-value="dark" title="夜间模式">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>文字颜色</label>
+                        <div class="color-picker">
+                            <input type="radio" name="text-color" value="white" id="text-white" checked>
+                            <label for="text-white" class="color-option white"></label>
+                            <input type="radio" name="text-color" value="black" id="text-black">
+                            <label for="text-black" class="color-option black"></label>
+                        </div>
                     </div>
                     <div class="setting-item">
                         <label>背景来源</label>
@@ -185,14 +220,14 @@
                         </label>
                     </div>
                      <div class="setting-item">
-                        <label>下雪特效</label>
+                        <label>下雪动效</label>
                         <label class="switch">
                             <input type="checkbox" id="snow-effect">
                             <span class="slider round"></span>
                         </label>
                     </div>
                     <div class="setting-item">
-                        <label>液态玻璃</label>
+                        <label>通盈效果</label>
                         <label class="switch">
                             <input type="checkbox" id="liquid-effect">
                             <span class="slider round"></span>
@@ -213,11 +248,11 @@
                     </div>
                     <div class="setting-item">
                         <label>目标日期</label>
-                        <input type="text" id="target-date" placeholder="年/月/日" onfocus="this.type='date'" onblur="this.type='text'">
+                        <input type="text" id="target-date" placeholder="年/月/日 或 年-月-日">
                     </div>
                     <div class="setting-item">
                         <label>目标时间</label>
-                        <input type="time" id="target-time" value="09:00">
+                        <input type="text" id="target-time" value="09:00" placeholder="时:分 或 时-分">
                     </div>
                     <p class="setting-hint">留空将使用默认高考时间（6月7日 9:00）</p>
                 </div>
@@ -230,6 +265,7 @@
 
     <!-- Scripts -->
     <script src="scripts/settings.js"></script>
+    <script src="scripts/device.js"></script>
     <script src="scripts/time.js"></script>
     <script src="scripts/loading.js"></script>
     <script src="scripts/inspire.js"></script>

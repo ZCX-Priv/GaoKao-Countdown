@@ -8,18 +8,22 @@
         showMs: false,
         snowEffect: false,
         liquidEffect: false,
-        enableAnimation: true,
         eventName: '高考',
         targetDate: null,
         targetTime: '09:00',
         bgSource: 'bing',
         bgColor: 'blue',
-        quoteType: ['all']
+        quoteType: ['all'],
+        textColor: 'white'
     };
 
+    const ANIMATION_SETTING_KEY = 'gaokao_animation_set';
+
     GaoKao.SettingsManager = class SettingsManager {
-        constructor() {
+        constructor(deviceManager) {
             this.settings = { ...DEFAULT_SETTINGS };
+            this.deviceManager = deviceManager;
+            this.animationSetByUser = false;
         }
 
         init() {
@@ -36,13 +40,32 @@
                 if (stored) {
                     this.settings = { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
                 }
+
+                const animationSet = localStorage.getItem(ANIMATION_SETTING_KEY);
+                this.animationSetByUser = animationSet === 'true';
+
+                if (!this.animationSetByUser) {
+                    const shouldAnimate = this.deviceManager.shouldEnableAnimation();
+                    this.settings.enableAnimation = shouldAnimate;
+                }
             } catch (e) {
                 console.warn('Failed to load settings:', e);
+                this.settings.enableAnimation = false;
             }
         }
 
         saveSettings(newSettings) {
             this.settings = { ...this.settings, ...newSettings };
+
+            if ('enableAnimation' in newSettings) {
+                this.animationSetByUser = true;
+                try {
+                    localStorage.setItem(ANIMATION_SETTING_KEY, 'true');
+                } catch (e) {
+                    console.warn('Failed to save animation setting key:', e);
+                }
+            }
+
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(this.settings));
             } catch (e) {

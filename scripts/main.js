@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    const { SettingsManager, Countdown, LoadingManager, QuoteManager, NoticeManager, SnowManager } = GaoKao;
+    const { SettingsManager, Countdown, LoadingManager, QuoteManager, NoticeManager, SnowManager, DeviceManager } = GaoKao;
 
     class LiquidManager {
         constructor() {
@@ -81,7 +81,8 @@
 
     class App {
         constructor() {
-            this.settingsManager = new SettingsManager();
+            this.deviceManager = new DeviceManager().detect();
+            this.settingsManager = new SettingsManager(this.deviceManager);
             this.countdown = new Countdown(this.updateUI.bind(this));
             this.loadingManager = new LoadingManager();
             this.quoteManager = new QuoteManager();
@@ -97,6 +98,10 @@
                 milliseconds: null
             };
 
+            this.isDateMode = false;
+            
+            this.isInitializing = true;
+
             this.dom = {
                 app: document.getElementById('app'),
                 countdownTitle: document.getElementById('countdown-title'),
@@ -107,6 +112,7 @@
                 milliseconds: document.getElementById('milliseconds'),
                 msContainer: document.getElementById('ms-container'),
                 settingsBtn: document.getElementById('settings-btn'),
+                fullscreenBtn: document.getElementById('fullscreen-btn'),
                 settingsModal: document.getElementById('settings-modal'),
                 closeSettings: document.getElementById('close-settings'),
                 glassCards: document.querySelectorAll('.glass-card, .glass-card-sm'),
@@ -116,6 +122,7 @@
                 themeMode: document.getElementById('theme-mode'),
                 bgSource: document.getElementById('bg-source'),
                 bgColorRadios: document.getElementsByName('bg-color'),
+                textColorRadios: document.getElementsByName('text-color'),
                 quoteTypeGroup: document.getElementById('quote-type-group'),
                 quoteTypeCheckboxes: document.getElementsByName('quote-type'),
                 showMs: document.getElementById('show-ms'),
@@ -141,13 +148,15 @@
                 this.dom.appContainer.style.animation = 'none';
             }
             
-            const targetDate = settings.targetDate ? new Date(`${settings.targetDate}T${settings.targetTime}`) : null;
+            const targetDate = settings.targetDate ? new Date(`${settings.targetDate.replace(/\//g, '-')}T${settings.targetTime}`) : null;
             this.countdown.setTarget(targetDate, settings.eventName);
             this.countdown.start(settings.showMs);
 
             this.syncSettingsUI(settings);
             this.applyVisualSettings(settings);
             this.bindEvents();
+            
+            this.isInitializing = false;
             
             this.loadingManager.start();
             
@@ -177,7 +186,10 @@
         }
 
         syncSettingsUI(settings) {
-            this.dom.themeMode.value = settings.themeMode;
+            const themeBtns = this.dom.themeMode.querySelectorAll('.theme-icon-btn');
+            themeBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === settings.themeMode);
+            });
             this.dom.bgSource.value = settings.bgSource;
             
             const quoteTypes = Array.isArray(settings.quoteType) ? settings.quoteType : [];
@@ -200,6 +212,13 @@
                 }
             }
             
+            for (const radio of this.dom.textColorRadios) {
+                if (radio.value === settings.textColor) {
+                    radio.checked = true;
+                    break;
+                }
+            }
+            
             if (settings.bgSource === 'color') {
                 this.dom.bgColorContainer.style.display = 'flex';
             } else {
@@ -210,6 +229,20 @@
                 this.dom.msContainer.classList.remove('hidden');
             } else {
                 this.dom.msContainer.classList.add('hidden');
+            }
+
+            this.updateThemeModeState(settings.liquidEffect);
+        }
+
+        updateThemeModeState(liquidEnabled) {
+            const themeItem = this.dom.themeMode.closest('.setting-item');
+            const themeBtns = this.dom.themeMode.querySelectorAll('.theme-icon-btn');
+            if (liquidEnabled) {
+                themeBtns.forEach(btn => btn.disabled = true);
+                themeItem.classList.add('disabled');
+            } else {
+                themeBtns.forEach(btn => btn.disabled = false);
+                themeItem.classList.remove('disabled');
             }
         }
 
@@ -284,19 +317,81 @@
                 document.body.style.backgroundAttachment = 'fixed';
                 updateOverlayBg();
             }
+
+            const countdownDisplay = document.querySelector('.countdown-display');
+            const textColor = settings.textColor === 'black' ? '#000000' : '#ffffff';
+            
+            document.documentElement.style.setProperty('--text-color', textColor);
         }
 
         bindEvents() {
             const settings = this.settingsManager.getSettings();
             const isAnimationEnabled = () => this.settingsManager.getSettings().enableAnimation;
             
+            const countdownCard = document.getElementById('countdown-card');
+            const timeElements = [this.dom.days, this.dom.hours, this.dom.minutes, this.dom.seconds, this.dom.milliseconds];
+            countdownCard.addEventListener('click', (e) => {
+                this.isDateMode = !this.isDateMode;
+                countdownCard.classList.remove('switching');
+                void countdownCard.offsetWidth;
+                countdownCard.classList.add('switching');
+                timeElements.forEach(el => {
+                    if (el && !el.classList.contains('hidden')) {
+                        el.classList.remove('tick');
+                        void el.offsetWidth;
+                        el.classList.add('tick');
+                    }
+                });
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const rect = countdownCard.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                countdownCard.appendChild(ripple);
+                setTimeout(() => {
+                    ripple.remove();
+                    countdownCard.classList.remove('switching');
+                }, 400);
+                if (this.isDateMode) {
+                    this.countdown.stop();
+                    this.countdown.start(this.settingsManager.getSettings().showMs);
+                } else {
+                    this.countdown.stop();
+                    this.countdown.start(this.settingsManager.getSettings().showMs);
+                }
+            });
+            
             this.dom.settingsBtn.addEventListener('click', () => {
-                this.dom.settingsModal.classList.remove('closing'); // Reset closing state if any
+                this.dom.settingsModal.classList.remove('closing');
                 if (isAnimationEnabled()) {
                     this.dom.settingsModal.classList.remove('hidden');
                 } else {
                     this.dom.settingsModal.classList.remove('hidden');
                     this.dom.settingsModal.classList.add('no-animation');
+                }
+                const settings = this.settingsManager.getSettings();
+                const textColor = settings.textColor === 'black' ? '#000000' : '#ffffff';
+                document.documentElement.style.setProperty('--text-color', textColor);
+            });
+
+            this.dom.fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        this.noticeManager.show('无法进入全屏模式');
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+
+            document.addEventListener('fullscreenchange', () => {
+                const svg = this.dom.fullscreenBtn.querySelector('svg');
+                if (document.fullscreenElement) {
+                    svg.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>';
+                } else {
+                    svg.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>';
                 }
             });
 
@@ -375,6 +470,85 @@
             });
 
             const saveHandler = () => {
+                if (this.isInitializing) return;
+                
+                const targetDateValue = this.dom.targetDate.value.trim();
+                const targetTimeValue = this.dom.targetTime.value.trim();
+                
+                let normalizedDate = '';
+                let normalizedTime = '';
+
+                if (targetDateValue) {
+                    const normalizedDateValue = targetDateValue.replace(/／/g, '/').replace(/－/g, '-');
+                    const dateRegex = /^(\d{1,4})\/(\d{1,2})\/(\d{1,2})$|^(\d{1,4})-(\d{1,2})-(\d{1,2})$/;
+                    const match = normalizedDateValue.match(dateRegex);
+                    if (!match) {
+                        this.noticeManager.show('日期格式错误，请使用 年/月/日 或 年-月-日 格式', 'error');
+                        return;
+                    }
+                    const year = match[1] ? Number(match[1]) : Number(match[4]);
+                    const month = match[2] ? Number(match[2]) : Number(match[5]);
+                    const day = match[3] ? Number(match[3]) : Number(match[6]);
+                    if (year < 1900 || year > 9999) {
+                        this.noticeManager.show('年份无效，请输入1900-9999之间的年份', 'error');
+                        return;
+                    }
+                    const dateObj = new Date(year, month - 1, day);
+                    if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month - 1 || dateObj.getDate() !== day) {
+                        this.noticeManager.show('日期无效，请输入正确的日期', 'error');
+                        return;
+                    }
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0);
+                    const todayTimestamp = now.getTime();
+                    const inputTimestamp = new Date(year, month - 1, day).getTime();
+                    const isToday = inputTimestamp === todayTimestamp;
+                    if (inputTimestamp < todayTimestamp) {
+                        this.noticeManager.show('日期必须晚于今天', 'error');
+                        return;
+                    }
+                    const dateStr = `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}`;
+                    
+                    if (targetDateValue !== normalizedDateValue) {
+                        this.dom.targetDate.value = dateStr;
+                    }
+                    
+                    normalizedDate = dateStr;
+                }
+                
+                if (targetTimeValue) {
+                    const normalizedTimeValue = targetTimeValue.replace(/：/g, ':').replace(/－/g, '-');
+                    const timeRegex = /^(\d{1,2}):(\d{1,2})$|^(\d{1,2})-(\d{1,2})$/;
+                    const match = normalizedTimeValue.match(timeRegex);
+                    if (!match) {
+                        this.noticeManager.show('时间格式错误，请使用 时:分 或 时-分 格式', 'error');
+                        return;
+                    }
+                    const hours = match[1] ? Number(match[1]) : Number(match[3]);
+                    const minutes = match[2] ? Number(match[2]) : Number(match[4]);
+                    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                        this.noticeManager.show('时间无效，请输入0-23时0-59分', 'error');
+                        return;
+                    }
+                    if (normalizedDate) {
+                        const now = new Date();
+                        const todayStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+                        if (normalizedDate === todayStr) {
+                            const currentHours = now.getHours();
+                            const currentMinutes = now.getMinutes();
+                            if (hours < currentHours || (hours === currentHours && minutes <= currentMinutes)) {
+                                this.noticeManager.show('今天的时间必须晚于当前时间', 'error');
+                                return;
+                            }
+                        }
+                    }
+                    normalizedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                    
+                    if (targetTimeValue !== normalizedTimeValue) {
+                        this.dom.targetTime.value = normalizedTime;
+                    }
+                }
+                
                 let bgColor = 'blue';
                 for (const radio of this.dom.bgColorRadios) {
                     if (radio.checked) {
@@ -390,8 +564,11 @@
                     }
                 }
 
+                const activeThemeBtn = this.dom.themeMode.querySelector('.theme-icon-btn.active');
+                const themeMode = activeThemeBtn ? activeThemeBtn.dataset.value : 'system';
+
                 const newSettings = {
-                    themeMode: this.dom.themeMode.value,
+                    themeMode: themeMode,
                     bgSource: this.dom.bgSource.value,
                     bgColor: bgColor,
                     quoteType: quoteTypes,
@@ -400,8 +577,14 @@
                     liquidEffect: this.dom.liquidEffect.checked,
                     enableAnimation: this.dom.enableAnimation.checked,
                     eventName: this.dom.eventName.value || '高考',
-                    targetDate: this.dom.targetDate.value || null,
-                    targetTime: this.dom.targetTime.value || '09:00'
+                    targetDate: normalizedDate || null,
+                    targetTime: normalizedTime || '09:00',
+                    textColor: (() => {
+                        for (const radio of this.dom.textColorRadios) {
+                            if (radio.checked) return radio.value;
+                        }
+                        return 'white';
+                    })()
                 };
                 this.settingsManager.saveSettings(newSettings);
                 
@@ -409,14 +592,26 @@
             };
 
             const inputs = [
-                this.dom.themeMode, this.dom.bgSource, 
+                this.dom.bgSource, 
                 this.dom.showMs, this.dom.snowEffect,
-                this.dom.liquidEffect, this.dom.enableAnimation,
-                this.dom.eventName, this.dom.targetDate, this.dom.targetTime
+                this.dom.liquidEffect, this.dom.enableAnimation
             ];
             
             inputs.forEach(input => {
                 input.addEventListener('change', saveHandler);
+            });
+
+            this.dom.eventName.addEventListener('blur', saveHandler);
+            this.dom.targetDate.addEventListener('change', saveHandler);
+            this.dom.targetTime.addEventListener('change', saveHandler);
+
+            const themeBtns = this.dom.themeMode.querySelectorAll('.theme-icon-btn');
+            themeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    themeBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    saveHandler();
+                });
             });
 
             this.dom.bgColorRadios.forEach(radio => {
@@ -424,18 +619,22 @@
                 radio.addEventListener('blur', saveHandler);
             });
 
+            this.dom.textColorRadios.forEach(radio => {
+                radio.addEventListener('change', saveHandler);
+            });
+
             this.dom.quoteTypeCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', saveHandler);
             });
 
-            this.dom.eventName.addEventListener('blur', saveHandler);
-            this.dom.targetDate.addEventListener('change', saveHandler);
-            this.dom.targetTime.addEventListener('change', saveHandler);
+            this.dom.liquidEffect.addEventListener('change', () => {
+                this.updateThemeModeState(this.dom.liquidEffect.checked);
+            });
 
             window.addEventListener('settingsChanged', (e) => {
                 const settings = e.detail;
                 
-                const targetDate = settings.targetDate ? new Date(`${settings.targetDate}T${settings.targetTime}`) : null;
+                const targetDate = settings.targetDate ? new Date(`${settings.targetDate.replace(/\//g, '-')}T${settings.targetTime}`) : null;
                 this.countdown.setTarget(targetDate, settings.eventName);
                 this.countdown.start(settings.showMs);
                 
@@ -452,33 +651,74 @@
         }
 
         updateUI(data) {
-            this.dom.days.textContent = String(data.days).padStart(2, '0');
-            this.dom.hours.textContent = String(data.hours).padStart(2, '0');
-            this.dom.minutes.textContent = String(data.minutes).padStart(2, '0');
-            this.dom.seconds.textContent = String(data.seconds).padStart(2, '0');
-
-            if (this.dom.milliseconds) {
-                this.dom.milliseconds.textContent = String(data.milliseconds).padStart(3, '0');
-            }
-
-            if (this.dom.countdownTitle.textContent !== data.statusText) {
-                this.dom.countdownTitle.textContent = data.statusText;
-            }
-
-            const timeValues = [this.dom.days, this.dom.hours, this.dom.minutes, this.dom.seconds, this.dom.milliseconds].filter(el => el);
-            const isEnded = data.statusText.includes('结束');
-
-            timeValues.forEach(el => {
-                el.classList.remove('urgent', 'ended');
-                if (isEnded) {
-                    el.classList.add('ended');
-                } else if (data.days < 60) {
-                    el.classList.add('urgent');
+            if (this.isDateMode) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth() + 1;
+                const day = now.getDate();
+                const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+                const weekday = weekdays[now.getDay()];
+                
+                const dateText = `${year}年${month}月${day}日 ${weekday}`;
+                if (this.dom.countdownTitle.textContent !== dateText) {
+                    this.dom.countdownTitle.textContent = dateText;
                 }
-            });
+                
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                const milliseconds = now.getMilliseconds();
+                
+                this.dom.hours.textContent = String(hours).padStart(2, '0');
+                this.dom.minutes.textContent = String(minutes).padStart(2, '0');
+                this.dom.seconds.textContent = String(seconds).padStart(2, '0');
+                
+                if (this.dom.milliseconds) {
+                    this.dom.milliseconds.textContent = String(milliseconds).padStart(3, '0');
+                }
+                
+                this.dom.days.parentElement.classList.add('hidden');
+                const currentSettings = this.settingsManager.getSettings();
+                if (currentSettings.showMs) {
+                    this.dom.msContainer.classList.remove('hidden');
+                } else {
+                    this.dom.msContainer.classList.add('hidden');
+                }
+            } else {
+                this.dom.days.parentElement.classList.remove('hidden');
+                const currentSettings = this.settingsManager.getSettings();
+                if (currentSettings.showMs) {
+                    this.dom.msContainer.classList.remove('hidden');
+                }
+                
+                this.dom.days.textContent = String(data.days).padStart(2, '0');
+                this.dom.hours.textContent = String(data.hours).padStart(2, '0');
+                this.dom.minutes.textContent = String(data.minutes).padStart(2, '0');
+                this.dom.seconds.textContent = String(data.seconds).padStart(2, '0');
 
-            if (this.settingsManager.getSettings().enableAnimation) {
-                this.animateChangedValues(data);
+                if (this.dom.milliseconds) {
+                    this.dom.milliseconds.textContent = String(data.milliseconds).padStart(3, '0');
+                }
+
+                if (this.dom.countdownTitle.textContent !== data.statusText) {
+                    this.dom.countdownTitle.textContent = data.statusText;
+                }
+
+                const timeValues = [this.dom.days, this.dom.hours, this.dom.minutes, this.dom.seconds, this.dom.milliseconds].filter(el => el);
+                const isEnded = data.statusText.includes('结束');
+
+                timeValues.forEach(el => {
+                    el.classList.remove('urgent', 'ended');
+                    if (isEnded) {
+                        el.classList.add('ended');
+                    } else if (data.days < 60) {
+                        el.classList.add('urgent');
+                    }
+                });
+
+                if (this.settingsManager.getSettings().enableAnimation) {
+                    this.animateChangedValues(data);
+                }
             }
         }
 
@@ -504,9 +744,9 @@
                 const element = elements[key];
 
                 if (this.previousValues[key] !== currentValue) {
-                    element.classList.remove('bounce');
+                    element.classList.remove('tick');
                     void element.offsetWidth;
-                    element.classList.add('bounce');
+                    element.classList.add('tick');
                 }
             });
 
