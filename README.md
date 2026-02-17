@@ -2,9 +2,9 @@
 
 <img src="logo.png" alt="高考倒计时" width="100" height="100">
 
-  <h1 style="font-size: 3em; font-weight: bold; margin: 20px 0; color: #f5f5f7; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">高考倒计时</h1>
+<h1 style="font-size: 3em; font-weight: bold; margin: 20px 0; color: #f5f5f7; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">高考倒计时</h1>
 
-  <p style="font-size: 1.2em; color: #f5f5f7; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">一款专为高三学生设计的倒计时工具，帮助学生直观地感知距离高考的时间，提供励志语录和个性化设置，营造专注备考的氛围。</p>
+<p style="font-size: 1.2em; color: #f5f5f7; text-shadow: 0 2px 5px rgba(0,0,0,0.5); max-width: 600px; margin: 0 auto;">一款专为高三学生设计的倒计时工具，帮助学生直观地感知距离高考的时间，提供励志语录和个性化设置，营造专注备考的氛围。</p>
 
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -16,16 +16,18 @@
 
 </div>
 
-### 主要特性
+## 主要特性
 
 - **精准倒计时**：显示距离高考的天、时、分、秒，可选择显示毫秒
 - **智能时间逻辑**：根据当前时间自动调整倒计时目标（考前/考试中/考后）
 - **励志语录**：集成一言 API，每 30 秒自动更换一条励志语录
 - **个性化设置**：主题模式、背景切换、特效开关，满足不同用户的审美需求
 - **响应式设计**：完美适配各种屏幕尺寸，无论手机还是电脑都能获得优质体验
-- **视觉特效**：液态玻璃卡片效果营造现代感，下雪粒子效果增添浪漫氛围
+- **视觉效果**：通盈效果卡片效果营造现代感，下雪动效增添浪漫氛围
 - **每日壁纸**：支持 Bing 每日一图，每天都有新鲜的视觉体验
 - **数据持久化**：用户设置自动保存，下次打开依然保持个性化配置
+- **智能设备适配**：自动检测设备性能，低配设备自动禁用动画以保证流畅
+- **全屏模式**：支持一键全屏，沉浸式体验
 
 ## 技术实现
 
@@ -42,16 +44,17 @@
 项目采用了现代 Web 设计趋势，注重用户体验和视觉美感：
 
 1. **玻璃拟态 (Glassmorphism)**：通过 backdrop-filter 实现毛玻璃效果
-2. **液态玻璃效果**：利用 SVG 滤镜创造独特的液体扭曲质感
+2. **通盈效果**：利用 SVG 滤镜创造独特的液体扭曲质感
 3. **CSS 动画**：平滑的过渡和交互动画，提升使用体验
 4. **自适应主题**：智能识别系统颜色模式，自动切换深色/浅色主题
 5. **响应式布局**：灵活运用 Flexbox，适应不同屏幕尺寸
+6. **性能自适应**：根据设备内存自动调整动画开关
 
 ## 项目结构
 
 ```
 高考倒计时/
-├── index.html              # 入口页面
+├── .trae/                 # Trae IDE 配置
 ├── styles/
 │   ├── main.css           # 全局样式和加载动画
 │   ├── card.css           # 卡片样式和倒计时布局
@@ -63,9 +66,14 @@
 │   ├── time.js            # 倒计时核心逻辑
 │   ├── inspire.js         # 励志语录管理
 │   ├── settings.js        # 用户设置管理
-│   └── snow.js            # 下雪特效
-├── liquid-glass/          # 液态玻璃效果演示
-└── .trae/                 # Trae IDE 配置
+│   ├── snow.js            # 下雪动效
+│   ├── device.js          # 设备检测与性能适配
+│   └── notice.js          # 通知提示管理
+├── logo.png               # 项目图标
+├── PRD.md                 # 产品需求文档
+├── README.md              # 项目说明文档
+├── LICENSE                # 开源许可证
+└── index.html              # 入口页面
 ```
 
 ## 功能详解
@@ -88,6 +96,13 @@
 - 自定义目标日期
 - 自定义目标时间
 
+#### 双模式切换
+
+点击倒计时卡片可切换显示模式：
+
+- **倒计时模式**：显示距离目标的时间
+- **当前时间模式**：显示当前日期和时间
+
 ### 设置面板
 
 #### 主题模式
@@ -95,6 +110,11 @@
 - **跟随系统**：根据系统设置自动切换深色/浅色模式
 - **白天模式**：始终使用浅色主题
 - **夜间模式**：始终使用深色主题
+
+#### 文字颜色
+
+- **白色**：适合深色背景
+- **黑色**：适合浅色背景
 
 #### 背景设置
 
@@ -112,24 +132,25 @@
 #### 特效开关
 
 - **毫秒显示**：高精度倒计时（10ms 更新一次）
-- **下雪特效**：浪漫的雪花飘落动画
-- **液态玻璃**：独特的液体扭曲视觉效果
-- **开启动画**：全局动画开关
+- **下雪动效**：浪漫的雪花飘落动画
+- **通盈效果**：独特的液体扭曲视觉效果
+- **开启动画**：全局动画开关（低配设备自动禁用）
 
-### 视觉特效
+### 视觉效果
 
-#### 液态玻璃效果
+#### 通盈效果
 
-使用 SVG 滤镜实现流体的扭曲效果，代码位于 [index.html](index.html#L15-L22)：
+使用 SVG 滤镜实现流体的扭曲效果，代码位于 [index.html](index.html#L15-L26)：
 
 ```html
-<filter id="liquid-filter">
-    <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise"/>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="10"/>
+<filter id="liquid-filter" x="-50%" y="-50%" width="200%" height="200%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+    <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+    <feDisplacementMap in="SourceGraphic" in2="blurred" scale="77" xChannelSelector="R" yChannelSelector="G" />
 </filter>
 ```
 
-#### 下雪粒子系统
+#### 下雪动效
 
 基于 Canvas 的粒子系统，代码位于 [scripts/snow.js](scripts/snow.js)：
 
@@ -138,13 +159,14 @@
 - 粒子透明度和大小随机变化
 - 使用 requestAnimationFrame 实现流畅动画
 
-#### Mac OS 精灵效果
 
-设置弹窗的显示/隐藏动画，代码位于 [styles/settings.css](styles/settings.css#L41-L76)：
+### 设备性能适配
 
-- 使用 clip-path 实现裁剪动画
-- 配合 transform 和 opacity
-- 流畅的展开/收起效果
+代码位于 [scripts/device.js](scripts/device.js)：
+
+- 检测设备内存（通过 Navigator.deviceMemory API）
+- 内存低于 4GB 的设备自动禁用动画
+- 确保低配设备也能流畅运行
 
 ## 使用方法
 
@@ -161,8 +183,7 @@
 - GitHub Pages
 - Vercel
 - Netlify
-- 阿里云 OSS
-- 腾讯云 COS
+- EdgeOne Page
 - ......
 
 ### 自定义配置
@@ -186,8 +207,9 @@
 ### 已知限制
 
 - 部分 CSS 属性需要较新的浏览器版本
-- 下雪特效在低性能设备上可能有轻微卡顿
-- 液态玻璃效果需要 SVG 滤镜支持
+- 下雪动效在低性能设备上可能有轻微卡顿
+- 通盈效果需要 SVG 滤镜支持
+- 设备内存检测需要浏览器支持 Navigator.deviceMemory API
 
 ## 开发说明
 
@@ -215,6 +237,15 @@
 4. 在 `main.js` 中初始化
 
 ## 核心模块说明
+
+### App ([scripts/main.js](scripts/main.js))
+
+主应用程序类，协调所有模块：
+
+- 初始化和协调各模块
+- 绑定用户交互事件
+- 管理设置保存和应用
+- 处理 UI 更新
 
 ### LoadingManager ([scripts/loading.js](scripts/loading.js))
 
@@ -252,7 +283,7 @@
 
 ### SnowManager ([scripts/snow.js](scripts/snow.js))
 
-下雪特效的粒子系统：
+下雪动效的粒子系统：
 
 - 动态创建雪花粒子
 - 模拟物理飘落效果
@@ -266,6 +297,22 @@
 - 显示临时通知气泡
 - 自动消失或手动关闭
 - 滑动收起动画效果
+
+### DeviceManager ([scripts/device.js](scripts/device.js))
+
+设备检测与性能适配：
+
+- 检测设备内存
+- 判断是否为低配设备
+- 智能决定是否启用动画
+
+### LiquidManager ([scripts/main.js](scripts/main.js))
+
+通盈效果管理器：
+
+- 动态追踪卡片位置
+- 更新 SVG 裁剪区域
+- 同步背景图像
 
 ## 许可证
 
