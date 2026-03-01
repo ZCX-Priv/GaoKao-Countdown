@@ -13,7 +13,9 @@
                 bubble.classList.add('error');
             }
             
-            // Check if liquid mode is active directly from localStorage to avoid async issues
+            const icon = type === 'error' ? '✗' : '✓';
+            
+            // 从 localStorage 直接检查流光模式是否激活，以避免异步问题
             try {
                 const stored = localStorage.getItem('gaokao_countdown_settings');
                 if (stored) {
@@ -27,7 +29,7 @@
             }
 
             bubble.innerHTML = `
-                <span>${message}</span>
+                <span>${icon} ${message}</span>
                 <button class="notice-close">&times;</button>
             `;
             
@@ -42,6 +44,24 @@
         }
 
         remove(bubble) {
+            const stored = localStorage.getItem('gaokao_countdown_settings');
+            let enableAnimation = false;
+            try {
+                if (stored) {
+                    const settings = JSON.parse(stored);
+                    enableAnimation = settings.enableAnimation;
+                }
+            } catch (e) {
+                console.warn('Failed to read settings for notice remove:', e);
+            }
+            
+            if (!enableAnimation) {
+                if (bubble.parentElement) {
+                    bubble.remove();
+                }
+                return;
+            }
+            
             bubble.style.animation = 'slideUp 0.3s forwards';
             bubble.addEventListener('animationend', () => {
                 if (bubble.parentElement) {

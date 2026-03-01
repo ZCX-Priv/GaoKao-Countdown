@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>高考倒计时</title>
-    <!-- Styles -->
+    <!-- 样式 -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/card.css">
     <link rel="stylesheet" href="styles/settings.css">
     <link rel="stylesheet" href="styles/notice.css">
 </head>
 <body>
-    <!-- SVG Filters -->
+    <!-- SVG 滤镜 -->
     <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
         <defs>
             <filter id="liquid-filter" x="-50%" y="-50%" width="200%" height="200%">
@@ -20,15 +20,15 @@
                 <feDisplacementMap in="SourceGraphic" in2="blurred" scale="77" xChannelSelector="R" yChannelSelector="G" />
             </filter>
             <clipPath id="cards-clip">
-                <!-- Rects will be injected by JS -->
+                <!-- 矩形将由 JS 注入 -->
             </clipPath>
         </defs>
     </svg>
 
-    <!-- Global Liquid Overlay -->
+    <!-- 全局流光遮罩 -->
     <div id="liquid-overlay"></div>
 
-    <!-- Loading Page -->
+    <!-- 加载页面 -->
     <div id="loading-page" class="loading-container">
         <div class="loading-content">
             <div class="clock-icon">
@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <!-- Main App -->
+    <!-- 主应用 -->
     <div id="app" class="app-container hidden">
         <header class="app-header">
             <div class="header-decoration"></div>
@@ -99,7 +99,7 @@
         </button>
     </div>
 
-    <!-- Settings Modal -->
+    <!-- 设置弹窗 -->
     <div id="settings-modal" class="modal-overlay hidden">
         <div class="modal-container genie-effect">
             <div class="modal-header">
@@ -219,6 +219,25 @@
                             <span class="slider round"></span>
                         </label>
                     </div>
+                    <div class="setting-item">
+                        <label>时间制式</label>
+                        <div class="theme-icons" id="time-format">
+                            <button type="button" class="theme-icon-btn" data-value="12h" title="12小时制（上午/下午）">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                                <span class="btn-label">12h</span>
+                            </button>
+                            <button type="button" class="theme-icon-btn" data-value="24h" title="24小时制">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                                <span class="btn-label">24h</span>
+                            </button>
+                        </div>
+                    </div>
                      <div class="setting-item">
                         <label>下雪动效</label>
                         <label class="switch">
@@ -260,10 +279,10 @@
         </div>
     </div>
 
-    <!-- Notice Container -->
+    <!-- 通知容器 -->
     <div id="notice-container"></div>
 
-    <!-- Scripts -->
+    <!-- 脚本 -->
     <script src="scripts/settings.js"></script>
     <script src="scripts/device.js"></script>
     <script src="scripts/time.js"></script>

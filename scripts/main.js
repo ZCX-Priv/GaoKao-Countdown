@@ -12,10 +12,10 @@
         }
         
         getCards() {
-             // Dynamically fetch visible cards including modal if active
+             // 动态获取可见的卡片，包括激活的弹窗
              const cards = Array.from(document.querySelectorAll('.glass-card, .glass-card-sm, .quote-card, .notice-bubble'));
              const modal = document.querySelector('.modal-container');
-             // Only add modal if it's visible (closest overlay not hidden) AND not closing
+             // 仅在弹窗可见（最近的遮罩层未隐藏）且未关闭时添加
              if (modal) {
                  const overlay = modal.closest('.modal-overlay');
                  if (overlay && !overlay.classList.contains('hidden') && !overlay.classList.contains('closing')) {
@@ -44,12 +44,12 @@
         update() {
             if (!this.isRunning) return;
 
-            // Clear existing rects
+            // 清除现有的矩形
             while (this.clipPath.firstChild) {
                 this.clipPath.removeChild(this.clipPath.firstChild);
             }
 
-            // Create new rects for each visible card
+            // 为每个可见卡片创建新的矩形
             const cards = this.getCards();
             cards.forEach(card => {
                 const rect = card.getBoundingClientRect();
@@ -59,7 +59,7 @@
                     svgRect.setAttribute('y', rect.top);
                     svgRect.setAttribute('width', rect.width);
                     svgRect.setAttribute('height', rect.height);
-                    svgRect.setAttribute('rx', '20'); // Matches border-radius
+                    svgRect.setAttribute('rx', '20'); // 对应 border-radius
                     svgRect.setAttribute('ry', '20');
                     this.clipPath.appendChild(svgRect);
                 }
@@ -69,12 +69,12 @@
         }
 
         setBackground(style) {
-            // Copy relevant background properties from an element style or string
-            // For simplicity, we assume we receive the final background string or logic here
-            // But actually, we should just sync with document.body.style
+            // 从元素样式或字符串复制相关的背景属性
+            // 为简单起见，我们假设这里接收的是最终的背景字符串或逻辑
+            // 但实际上，我们应该只与 document.body.style 同步
             
-            // In this specific app structure, body background is set inline.
-            // So we can just copy it.
+            // 在此特定应用结构中，body 背景是内联设置的
+            // 所以我们可以直接复制它
             this.overlay.style.backgroundImage = document.body.style.backgroundImage;
         }
     }
@@ -133,7 +133,8 @@
                 targetDate: document.getElementById('target-date'),
                 targetTime: document.getElementById('target-time'),
                 tabs: document.querySelectorAll('.tab-btn'),
-                panes: document.querySelectorAll('.tab-pane')
+                panes: document.querySelectorAll('.tab-pane'),
+                timeFormat: document.getElementById('time-format')
             };
         }
 
@@ -142,6 +143,7 @@
             const settings = this.settingsManager.getSettings();
             
             if (!settings.enableAnimation) {
+                document.body.classList.add('no-animation');
                 document.body.style.transition = 'none';
                 this.dom.loadingPage.style.transition = 'none';
                 this.dom.appContainer.style.transition = 'none';
@@ -231,6 +233,11 @@
                 this.dom.msContainer.classList.add('hidden');
             }
 
+            const timeFormatBtns = this.dom.timeFormat.querySelectorAll('.theme-icon-btn');
+            timeFormatBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === settings.timeFormat);
+            });
+
             this.updateThemeModeState(settings.liquidEffect);
         }
 
@@ -253,14 +260,14 @@
                 this.snowManager.stop();
             }
 
-            // Toggle Liquid Effect
+            // 切换流光效果
             if (settings.liquidEffect) {
                 this.liquidManager.start();
                 this.dom.glassCards.forEach(card => card.classList.add('liquid-mode'));
                 if (this.dom.settingsModal.querySelector('.modal-container')) {
                     this.dom.settingsModal.querySelector('.modal-container').classList.add('liquid-mode');
                 }
-                // Update any existing notices
+                // 更新已有的通知
                 document.querySelectorAll('.notice-bubble').forEach(n => n.classList.add('liquid-mode'));
             } else {
                 this.liquidManager.stop();
@@ -268,11 +275,11 @@
                 if (this.dom.settingsModal.querySelector('.modal-container')) {
                     this.dom.settingsModal.querySelector('.modal-container').classList.remove('liquid-mode');
                 }
-                // Update any existing notices
+                // 更新已有的通知
                 document.querySelectorAll('.notice-bubble').forEach(n => n.classList.remove('liquid-mode'));
             }
 
-            // Clean up inline filters just in case
+            // 清理内联滤镜以防万一
             this.dom.glassCards.forEach(card => {
                 card.style.filter = '';
             });
@@ -331,29 +338,35 @@
             const countdownCard = document.getElementById('countdown-card');
             const timeElements = [this.dom.days, this.dom.hours, this.dom.minutes, this.dom.seconds, this.dom.milliseconds];
             countdownCard.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.closest('.time-unit') || target.closest('.time-value') || target.closest('.time-label') || target.closest('.time-bar')) {
+                    return;
+                }
                 this.isDateMode = !this.isDateMode;
-                countdownCard.classList.remove('switching');
-                void countdownCard.offsetWidth;
-                countdownCard.classList.add('switching');
-                timeElements.forEach(el => {
-                    if (el && !el.classList.contains('hidden')) {
-                        el.classList.remove('tick');
-                        void el.offsetWidth;
-                        el.classList.add('tick');
-                    }
-                });
-                const ripple = document.createElement('span');
-                ripple.classList.add('ripple');
-                const rect = countdownCard.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-                countdownCard.appendChild(ripple);
-                setTimeout(() => {
-                    ripple.remove();
+                if (isAnimationEnabled()) {
                     countdownCard.classList.remove('switching');
-                }, 400);
+                    void countdownCard.offsetWidth;
+                    countdownCard.classList.add('switching');
+                    timeElements.forEach(el => {
+                        if (el && !el.classList.contains('hidden')) {
+                            el.classList.remove('tick');
+                            void el.offsetWidth;
+                            el.classList.add('tick');
+                        }
+                    });
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    const rect = countdownCard.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                    countdownCard.appendChild(ripple);
+                    setTimeout(() => {
+                        ripple.remove();
+                        countdownCard.classList.remove('switching');
+                    }, 400);
+                }
                 if (this.isDateMode) {
                     this.countdown.stop();
                     this.countdown.start(this.settingsManager.getSettings().showMs);
@@ -408,7 +421,7 @@
                 const onAnimationEnd = () => {
                     this.dom.settingsModal.classList.remove('closing');
                     this.dom.settingsModal.classList.add('hidden');
-                    this.dom.settingsModal.classList.remove('no-animation'); // Cleanup
+                    this.dom.settingsModal.classList.remove('no-animation'); // 清理
                     container.removeEventListener('animationend', onAnimationEnd);
                 };
                 
@@ -416,12 +429,6 @@
             };
 
             this.dom.closeSettings.addEventListener('click', closeSettingsHandler);
-
-            this.dom.settingsModal.addEventListener('click', (e) => {
-                if (e.target === this.dom.settingsModal) {
-                    closeSettingsHandler();
-                }
-            });
 
             this.dom.tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
@@ -566,6 +573,9 @@
 
                 const activeThemeBtn = this.dom.themeMode.querySelector('.theme-icon-btn.active');
                 const themeMode = activeThemeBtn ? activeThemeBtn.dataset.value : 'system';
+                
+                const activeTimeFormatBtn = this.dom.timeFormat.querySelector('.theme-icon-btn.active');
+                const timeFormat = activeTimeFormatBtn ? activeTimeFormatBtn.dataset.value : '24h';
 
                 const newSettings = {
                     themeMode: themeMode,
@@ -579,6 +589,7 @@
                     eventName: this.dom.eventName.value || '高考',
                     targetDate: normalizedDate || null,
                     targetTime: normalizedTime || '09:00',
+                    timeFormat: timeFormat,
                     textColor: (() => {
                         for (const radio of this.dom.textColorRadios) {
                             if (radio.checked) return radio.value;
@@ -614,6 +625,15 @@
                 });
             });
 
+            const timeFormatBtns = this.dom.timeFormat.querySelectorAll('.theme-icon-btn');
+            timeFormatBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    timeFormatBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    saveHandler();
+                });
+            });
+
             this.dom.bgColorRadios.forEach(radio => {
                 radio.addEventListener('change', saveHandler);
                 radio.addEventListener('blur', saveHandler);
@@ -633,6 +653,12 @@
 
             window.addEventListener('settingsChanged', (e) => {
                 const settings = e.detail;
+                
+                if (settings.enableAnimation) {
+                    document.body.classList.remove('no-animation');
+                } else {
+                    document.body.classList.add('no-animation');
+                }
                 
                 const targetDate = settings.targetDate ? new Date(`${settings.targetDate.replace(/\//g, '-')}T${settings.targetTime}`) : null;
                 this.countdown.setTarget(targetDate, settings.eventName);
@@ -659,17 +685,32 @@
                 const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
                 const weekday = weekdays[now.getDay()];
                 
-                const dateText = `${year}年${month}月${day}日 ${weekday}`;
-                if (this.dom.countdownTitle.textContent !== dateText) {
-                    this.dom.countdownTitle.textContent = dateText;
-                }
+                const currentSettings = this.settingsManager.getSettings();
+                const timeFormat = currentSettings.timeFormat || '24h';
                 
-                const hours = now.getHours();
+                let hours24 = now.getHours();
                 const minutes = now.getMinutes();
                 const seconds = now.getSeconds();
                 const milliseconds = now.getMilliseconds();
                 
-                this.dom.hours.textContent = String(hours).padStart(2, '0');
+                let hours12;
+                let ampm;
+                if (timeFormat === '12h') {
+                    ampm = hours24 >= 12 ? '下午' : '上午';
+                    hours12 = hours24 % 12;
+                    hours12 = hours12 ? hours12 : 12;
+                }
+                
+                const displayHours = timeFormat === '12h' ? hours12 : hours24;
+                const dateText = timeFormat === '12h' 
+                    ? `${year}年${month}月${day}日 ${weekday} ${ampm}`
+                    : `${year}年${month}月${day}日 ${weekday}`;
+                
+                if (this.dom.countdownTitle.textContent !== dateText) {
+                    this.dom.countdownTitle.textContent = dateText;
+                }
+                
+                this.dom.hours.textContent = String(displayHours).padStart(2, '0');
                 this.dom.minutes.textContent = String(minutes).padStart(2, '0');
                 this.dom.seconds.textContent = String(seconds).padStart(2, '0');
                 
@@ -678,7 +719,6 @@
                 }
                 
                 this.dom.days.parentElement.classList.add('hidden');
-                const currentSettings = this.settingsManager.getSettings();
                 if (currentSettings.showMs) {
                     this.dom.msContainer.classList.remove('hidden');
                 } else {

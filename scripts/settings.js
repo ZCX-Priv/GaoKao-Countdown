@@ -14,7 +14,8 @@
         bgSource: 'bing',
         bgColor: 'blue',
         quoteType: ['all'],
-        textColor: 'white'
+        textColor: 'white',
+        timeFormat: '24h'
     };
 
     const ANIMATION_SETTING_KEY = 'gaokao_animation_set';

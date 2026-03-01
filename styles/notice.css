@@ -26,12 +26,12 @@
     margin: 5px 0;
 }
 
-/* Liquid Mode for Notice */
+/* 通知流光模式 */
 .notice-bubble.liquid-mode {
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    /* Overlay handles the visual effect */
+    /* 遮罩层处理视觉效果 */
 }
 
 .notice-close {
@@ -65,4 +65,15 @@
 @keyframes slideUp {
     from { transform: translateY(0); opacity: 1; }
     to { transform: translateY(-50px); opacity: 0; }
+}
+
+body.no-animation .notice-bubble {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+}
+
+body.no-animation .notice-bubble.closing {
+    animation: none !important;
+    opacity: 0;
 }
