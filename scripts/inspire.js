@@ -43,7 +43,9 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.hitokoto) {
-                            this.animateQuoteChange(data.hitokoto, data.from || data.from_who || data.creator);
+                            this.contentEl.textContent = data.hitokoto;
+                            const author = data.from || data.from_who || data.creator;
+                            this.authorEl.textContent = author && author !== '无' ? `—— ${author}` : '—— 匿名';
                         } else {
                             this.showLocalQuote();
                         }
@@ -54,21 +56,6 @@
                         resolve();
                     });
             });
-        }
-
-        animateQuoteChange(content, author) {
-            const card = this.contentEl.closest('.quote-card');
-            if (card) {
-                card.classList.add('switching');
-                setTimeout(() => {
-                    this.contentEl.textContent = content;
-                    this.authorEl.textContent = author && author !== '无' ? `—— ${author}` : '—— 匿名';
-                    card.classList.remove('switching');
-                }, 200);
-            } else {
-                this.contentEl.textContent = content;
-                this.authorEl.textContent = author && author !== '无' ? `—— ${author}` : '—— 匿名';
-            }
         }
 
         showLocalQuote() {
@@ -88,7 +75,8 @@
             ];
 
             const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-            this.animateQuoteChange(randomQuote.content, randomQuote.author);
+            this.contentEl.textContent = randomQuote.content;
+            this.authorEl.textContent = `—— ${randomQuote.author}`;
         }
     };
 
