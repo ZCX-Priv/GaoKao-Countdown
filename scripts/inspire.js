@@ -5,8 +5,20 @@
         constructor() {
             this.contentEl = document.getElementById('quote-content');
             this.authorEl = document.getElementById('quote-author');
+            this.containerEl = document.getElementById('quote-container');
             this.intervalId = null;
             this.currentTypes = [];
+            this.initClickEvent();
+        }
+
+        initClickEvent() {
+            if (this.containerEl) {
+                this.containerEl.style.cursor = 'pointer';
+                this.containerEl.title = '点击切换励志语';
+                this.containerEl.addEventListener('click', () => {
+                    this.fetchQuote();
+                });
+            }
         }
 
         load(types = []) {
@@ -38,10 +50,13 @@
                     url += `&c=${t}`;
                 });
             }
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
             return new Promise((resolve) => {
-                fetch(url)
+                fetch(url, { signal: controller.signal })
                     .then(response => response.json())
                     .then(data => {
+                        clearTimeout(timeoutId);
                         if (data.hitokoto) {
                             this.contentEl.textContent = data.hitokoto;
                             const author = data.from || data.from_who || data.creator;
@@ -52,6 +67,7 @@
                         resolve();
                     })
                     .catch(() => {
+                        clearTimeout(timeoutId);
                         this.showLocalQuote();
                         resolve();
                     });
