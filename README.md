@@ -56,9 +56,14 @@
 高考倒计时/
 ├── .trae/                 # Trae IDE 配置
 ├── styles/
-│   ├── main.css           # 全局样式和加载动画
-│   ├── card.css           # 卡片样式和倒计时布局
-│   ├── settings.css       # 设置弹窗样式
+│   ├── base.css           # 基础变量和全局样式
+│   ├── layout.css         # 布局样式
+│   ├── components.css     # 组件样式（按钮、开关等）
+│   ├── themes.css         # 主题样式
+│   ├── animations.css     # 动画样式
+│   ├── loading.css        # 加载页面样式
+│   ├── countdown.css      # 倒计时卡片样式
+│   ├── modal.css          # 模态窗样式
 │   └── notice.css         # 通知提示样式
 ├── scripts/
 │   ├── main.js            # 主程序逻辑
@@ -73,7 +78,7 @@
 ├── PRD.md                 # 产品需求文档
 ├── README.md              # 项目说明文档
 ├── LICENSE                # 开源许可证
-└── index.html              # 入口页面
+└── index.html             # 入口页面
 ```
 
 ## 功能详解
@@ -140,7 +145,7 @@
 
 #### 通盈效果
 
-使用 SVG 滤镜实现流体的扭曲效果，代码位于 [index.html](index.html#L15-L26)：
+使用 SVG 滤镜实现流体的扭曲效果，代码位于 [index.html](index.html#L22-L26)：
 
 ```html
 <filter id="liquid-filter" x="-50%" y="-50%" width="200%" height="200%">
