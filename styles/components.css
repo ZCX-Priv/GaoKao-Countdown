@@ -13,14 +13,14 @@
 
 .settings-btn {
     right: 15px;
-    width: 36px;
-    height: 36px;
+    width: 24px;
+    height: 24px;
 }
 
 .fullscreen-btn {
-    right: 65px;
-    width: 36px;
-    height: 36px;
+    right: 50px;
+    width: 24px;
+    height: 24px;
 }
 
 .settings-btn:hover,

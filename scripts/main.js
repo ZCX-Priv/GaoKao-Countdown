@@ -182,10 +182,18 @@
             if (settings.bgSource !== 'bing') return;
             const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
             const img = new Image();
+            const timeoutId = setTimeout(() => {
+                img.onload = null;
+                img.onerror = null;
+                img.src = '';
+                document.body.style.backgroundImage = '';
+            }, 5000);
             img.onload = () => {
+                clearTimeout(timeoutId);
                 document.body.style.backgroundImage = `url('${bgUrl}')`;
             };
             img.onerror = () => {
+                clearTimeout(timeoutId);
                 document.body.style.backgroundImage = '';
             };
             img.src = bgUrl;
@@ -298,11 +306,20 @@
                 if (settings.bgSource === 'bing') {
                     const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
                     const img = new Image();
+                    const timeoutId = setTimeout(() => {
+                        img.onload = null;
+                        img.onerror = null;
+                        img.src = '';
+                        document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                        updateOverlayBg();
+                    }, 5000);
                     img.onload = () => {
+                        clearTimeout(timeoutId);
                         document.body.style.backgroundImage = `url('${bgUrl}')`;
                         updateOverlayBg();
                     };
                     img.onerror = () => {
+                        clearTimeout(timeoutId);
                         document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
                         updateOverlayBg();
                     };
