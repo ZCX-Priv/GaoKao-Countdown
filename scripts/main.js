@@ -100,6 +100,8 @@
 
             this.isDateMode = false;
             
+            this.currentSettings = null;
+            
             this.isInitializing = true;
 
             this.dom = {
@@ -141,6 +143,7 @@
         async init() {
             await this.settingsManager.init();
             const settings = this.settingsManager.getSettings();
+            this.currentSettings = { ...settings };
             
             if (!settings.enableAnimation) {
                 document.body.classList.add('no-animation');
@@ -155,7 +158,7 @@
             this.countdown.start(settings.showMs);
 
             this.syncSettingsUI(settings);
-            this.applyVisualSettings(settings);
+            this.applyVisualSettings(settings, true);
             this.bindEvents();
             
             this.isInitializing = false;
@@ -253,21 +256,19 @@
             }
         }
 
-        applyVisualSettings(settings) {
+        applyVisualSettings(settings, isInit = false) {
             if (settings.snowEffect) {
                 this.snowManager.start();
             } else {
                 this.snowManager.stop();
             }
 
-            // 切换流光效果
             if (settings.liquidEffect) {
                 this.liquidManager.start();
                 this.dom.glassCards.forEach(card => card.classList.add('liquid-mode'));
                 if (this.dom.settingsModal.querySelector('.modal-container')) {
                     this.dom.settingsModal.querySelector('.modal-container').classList.add('liquid-mode');
                 }
-                // 更新已有的通知
                 document.querySelectorAll('.notice-bubble').forEach(n => n.classList.add('liquid-mode'));
             } else {
                 this.liquidManager.stop();
@@ -275,11 +276,9 @@
                 if (this.dom.settingsModal.querySelector('.modal-container')) {
                     this.dom.settingsModal.querySelector('.modal-container').classList.remove('liquid-mode');
                 }
-                // 更新已有的通知
                 document.querySelectorAll('.notice-bubble').forEach(n => n.classList.remove('liquid-mode'));
             }
 
-            // 清理内联滤镜以防万一
             this.dom.glassCards.forEach(card => {
                 card.style.filter = '';
             });
@@ -290,39 +289,45 @@
                 }
             };
 
-            if (settings.bgSource === 'bing') {
-                const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
-                const img = new Image();
-                img.onload = () => {
-                    document.body.style.backgroundImage = `url('${bgUrl}')`;
+            const bgChanged = isInit || 
+                this.currentSettings.bgSource !== settings.bgSource || 
+                this.currentSettings.bgColor !== settings.bgColor;
+
+            if (bgChanged) {
+                if (settings.bgSource === 'bing') {
+                    const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
+                    const img = new Image();
+                    img.onload = () => {
+                        document.body.style.backgroundImage = `url('${bgUrl}')`;
+                        updateOverlayBg();
+                    };
+                    img.onerror = () => {
+                        document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                        updateOverlayBg();
+                    };
+                    img.src = bgUrl;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                } else if (settings.bgSource === 'color') {
+                    const colorMap = {
+                        'blue': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                        'orange': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                        'purple': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+                        'green': 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)'
+                    };
+                    document.body.style.backgroundImage = colorMap[settings.bgColor] || colorMap['blue'];
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
                     updateOverlayBg();
-                };
-                img.onerror = () => {
+                } else {
                     document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
                     updateOverlayBg();
-                };
-                img.src = bgUrl;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundPosition = 'center';
-                document.body.style.backgroundAttachment = 'fixed';
-            } else if (settings.bgSource === 'color') {
-                const colorMap = {
-                    'blue': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                    'orange': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                    'purple': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
-                    'green': 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)'
-                };
-                document.body.style.backgroundImage = colorMap[settings.bgColor] || colorMap['blue'];
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundPosition = 'center';
-                document.body.style.backgroundAttachment = 'fixed';
-                updateOverlayBg();
-            } else {
-                document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundPosition = 'center';
-                document.body.style.backgroundAttachment = 'fixed';
-                updateOverlayBg();
+                }
             }
 
             const countdownDisplay = document.querySelector('.countdown-display');
@@ -654,10 +659,30 @@
             window.addEventListener('settingsChanged', (e) => {
                 const settings = e.detail;
                 
-                if (settings.enableAnimation) {
-                    document.body.classList.remove('no-animation');
-                } else {
-                    document.body.classList.add('no-animation');
+                const body = document.body;
+                const appContainer = this.dom.appContainer;
+                const loadingPage = this.dom.loadingPage;
+                const hadNoAnimation = body.classList.contains('no-animation');
+                const willHaveNoAnimation = !settings.enableAnimation;
+                
+                if (hadNoAnimation !== willHaveNoAnimation) {
+                    body.style.transition = 'none';
+                    appContainer.style.transition = 'none';
+                    appContainer.style.animation = 'none';
+                    loadingPage.style.transition = 'none';
+                    
+                    if (settings.enableAnimation) {
+                        body.classList.remove('no-animation');
+                    } else {
+                        body.classList.add('no-animation');
+                    }
+                    
+                    requestAnimationFrame(() => {
+                        body.style.transition = '';
+                        appContainer.style.transition = '';
+                        appContainer.style.animation = '';
+                        loadingPage.style.transition = '';
+                    });
                 }
                 
                 const targetDate = settings.targetDate ? new Date(`${settings.targetDate.replace(/\//g, '-')}T${settings.targetTime}`) : null;
@@ -672,7 +697,13 @@
                     this.dom.msContainer.classList.add('hidden');
                 }
 
-                this.quoteManager.load(settings.quoteType);
+                const quoteTypeChanged = !this.currentSettings || 
+                    JSON.stringify(this.currentSettings.quoteType) !== JSON.stringify(settings.quoteType);
+                if (quoteTypeChanged) {
+                    this.quoteManager.load(settings.quoteType);
+                }
+                
+                this.currentSettings = { ...settings };
             });
         }
 

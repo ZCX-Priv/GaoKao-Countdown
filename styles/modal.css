@@ -1,0 +1,159 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-overlay:not(.hidden):not(.closing) {
+    animation: overlayShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    pointer-events: auto;
+}
+
+.modal-overlay.closing {
+    animation: overlayHide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+body.no-animation .modal-overlay:not(.hidden):not(.closing),
+body.no-animation .modal-overlay.closing {
+    animation: none;
+}
+
+body.no-animation .modal-overlay:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    transform-origin: center center;
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.modal-overlay:not(.hidden):not(.closing) .modal-container {
+    animation: genieShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.modal-overlay.hidden .modal-container,
+.modal-overlay.closing .modal-container {
+    animation: genieHide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+body.no-animation .modal-overlay:not(.hidden):not(.closing) .modal-container,
+body.no-animation .modal-overlay.closing .modal-container {
+    animation: none !important;
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scale(1) translateY(0);
+}
+
+.modal-container.liquid-mode {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    text-align: center;
+    color: var(--text-color, #f5f5f7);
+}
+
+.close-btn {
+    position: absolute;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color, #f5f5f7);
+    transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+    opacity: 0.7;
+}
+
+.modal-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    flex-shrink: 0;
+}
+
+.modal-tabs .tab-btn {
+    padding: 8px 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-color, #f5f5f7);
+    cursor: pointer;
+    opacity: 0.6;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 14px;
+    margin: 0 5px;
+}
+
+.modal-tabs .tab-btn.active {
+    opacity: 1;
+    background: rgba(0, 122, 255, 0.2);
+    font-weight: bold;
+}
+
+.modal-tabs .tab-btn:hover:not(.active) {
+    opacity: 0.8;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.no-animation .modal-tabs .tab-btn {
+    transition: none;
+}
+
+.modal-content {
+    padding: 20px;
+    flex: 1;
+    min-height: 0;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.3s;
+}
+
+body.no-animation .tab-pane.active {
+    animation: none;
+}

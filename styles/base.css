@@ -1,0 +1,107 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root {
+    --primary-color: #007aff;
+    --secondary-color: #ff9500;
+
+    --bg-light: #f5f5f7;
+    --bg-dark: #000000;
+    --text-light: #1d1d1f;
+    --text-dark: #f5f5f7;
+    --glass-bg-light: rgba(255, 255, 255, 0.25);
+    --glass-bg-dark: rgba(0, 0, 0, 0.4);
+    --glass-border-light: rgba(255, 255, 255, 0.35);
+    --glass-border-dark: rgba(255, 255, 255, 0.15);
+
+    --bg-color: var(--bg-light);
+    --text-color: var(--text-light);
+    --glass-bg: var(--glass-bg-light);
+    --glass-border: var(--glass-border-light);
+    --loading-text-color: var(--text-light);
+
+    --header-font: "Xingkai SC", "STXingkai", "KaiTi", "华文行楷", cursive;
+}
+
+html {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: #f5f5f7;
+    transition: background-color 0.3s, color 0.3s;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 100vh;
+    width: 100vw;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+#liquid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 5;
+    pointer-events: none;
+    background-image: inherit;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    filter: url(#liquid-filter);
+    clip-path: url(#cards-clip);
+    display: none;
+}
+
+#liquid-overlay.active {
+    display: block;
+}
+
+#liquid-overlay.liquid-mode {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.hidden {
+    display: none;
+}
+
+html .hidden {
+    display: none;
+}
+
+#app.hidden {
+    display: none;
+}
+
+#loading-page.hidden {
+    display: none;
+}
+
+#settings-modal.hidden {
+    display: none;
+}
+
+#ms-container.hidden {
+    display: none;
+}
+
+body.no-animation {
+    transition: none;
+}

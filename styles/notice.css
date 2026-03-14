@@ -1,15 +1,3 @@
-#notice-container {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    width: 90%;
-    max-width: 400px;
-}
-
 .notice-bubble {
     background: var(--glass-bg);
     backdrop-filter: blur(15px);
@@ -26,12 +14,10 @@
     margin: 5px 0;
 }
 
-/* 通知流光模式 */
 .notice-bubble.liquid-mode {
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    /* 遮罩层处理视觉效果 */
 }
 
 .notice-close {
@@ -42,6 +28,7 @@
     cursor: pointer;
     color: var(--text-color, #f5f5f7);
     opacity: 0.5;
+    transition: opacity 0.2s;
 }
 
 .notice-close:hover {
@@ -57,23 +44,21 @@
     color: #ff6b6b;
 }
 
-@keyframes slideDown {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(-50px); opacity: 0; }
+.notice-bubble.closing {
+    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 body.no-animation .notice-bubble {
-    animation: none !important;
+    animation: none;
     opacity: 1;
     transform: none;
 }
 
 body.no-animation .notice-bubble.closing {
-    animation: none !important;
+    animation: none;
     opacity: 0;
+}
+
+body.no-animation .notice-close {
+    transition: none;
 }
