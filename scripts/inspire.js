@@ -60,13 +60,46 @@
                     url += `&c=${t}`;
                 });
             }
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
             return new Promise((resolve) => {
-                fetch(url, { signal: controller.signal })
+                let timeoutId = null;
+                let resolved = false;
+                let controller = null;
+                
+                const cleanup = () => {
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                        timeoutId = null;
+                    }
+                    if (controller) {
+                        controller.abort();
+                    }
+                };
+                
+                const done = () => {
+                    if (resolved) return;
+                    resolved = true;
+                    cleanup();
+                    resolve();
+                };
+                
+                timeoutId = setTimeout(() => {
+                    if (resolved) return;
+                    this.showLocalQuote();
+                    done();
+                }, 5000);
+                
+                const fetchOptions = {};
+                if (typeof AbortController !== 'undefined') {
+                    controller = new AbortController();
+                    fetchOptions.signal = controller.signal;
+                }
+                
+                fetch(url, fetchOptions)
                     .then(response => response.json())
                     .then(data => {
-                        clearTimeout(timeoutId);
+                        if (resolved) return;
+                        cleanup();
                         if (data.hitokoto) {
                             this.contentEl.textContent = data.hitokoto;
                             const author = data.from || data.from_who || data.creator;
@@ -74,12 +107,13 @@
                         } else {
                             this.showLocalQuote();
                         }
-                        resolve();
+                        done();
                     })
                     .catch(() => {
-                        clearTimeout(timeoutId);
+                        if (resolved) return;
+                        cleanup();
                         this.showLocalQuote();
-                        resolve();
+                        done();
                     });
             });
         }
