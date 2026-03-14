@@ -90,6 +90,7 @@ body.no-animation .glass-card.switching {
     opacity: 0.9;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
     color: var(--text-color, #f5f5f7);
+    transition: color 0.3s ease;
 }
 
 .countdown-display {
@@ -98,6 +99,7 @@ body.no-animation .glass-card.switching {
     flex-wrap: wrap;
     margin: -10px 0;
     color: var(--text-color, #f5f5f7);
+    transition: color 0.3s ease;
 }
 
 .time-unit {
@@ -145,6 +147,13 @@ body.no-animation .time-value.tick {
 
 body.no-animation .time-value,
 body.no-animation .time-value.sm {
+    transition: none;
+}
+
+body.no-animation .card-header h2,
+body.no-animation .countdown-display,
+body.no-animation #quote-content,
+body.no-animation #quote-author {
     transition: none;
 }
 
@@ -237,6 +246,7 @@ body.no-animation .quote-card:hover {
     overflow-wrap: break-word;
     word-wrap: break-word;
     color: var(--text-color, #f5f5f7);
+    transition: color 0.3s ease;
 }
 
 #quote-author {
@@ -246,6 +256,7 @@ body.no-animation .quote-card:hover {
     opacity: 0.7;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
     color: var(--text-color, #f5f5f7);
+    transition: color 0.3s ease;
 }
 
 @media (max-width: 768px) {

@@ -87,6 +87,7 @@
             this.loadingManager = new LoadingManager();
             this.quoteManager = new QuoteManager();
             this.noticeManager = new NoticeManager();
+            GaoKao.notice = this.noticeManager;
             this.snowManager = new SnowManager();
             this.liquidManager = new LiquidManager();
 

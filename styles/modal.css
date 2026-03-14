@@ -87,6 +87,7 @@ body.no-animation .modal-overlay.closing .modal-container {
     margin: 0;
     text-align: center;
     color: var(--text-color, #f5f5f7);
+    transition: color 0.3s ease;
 }
 
 .close-btn {
@@ -97,7 +98,7 @@ body.no-animation .modal-overlay.closing .modal-container {
     font-size: 1.5rem;
     cursor: pointer;
     color: var(--text-color, #f5f5f7);
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, color 0.3s ease;
 }
 
 .close-btn:hover {
@@ -119,7 +120,7 @@ body.no-animation .modal-overlay.closing .modal-container {
     cursor: pointer;
     opacity: 0.6;
     border-radius: 8px;
-    transition: all 0.2s;
+    transition: all 0.2s, color 0.3s ease;
     font-size: 14px;
     margin: 0 5px;
 }
@@ -156,4 +157,10 @@ body.no-animation .modal-tabs .tab-btn {
 
 body.no-animation .tab-pane.active {
     animation: none;
+}
+
+body.no-animation .modal-header h2,
+body.no-animation .close-btn,
+body.no-animation .modal-tabs .tab-btn {
+    transition: none;
 }

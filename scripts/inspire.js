@@ -8,6 +8,8 @@
             this.containerEl = document.getElementById('quote-container');
             this.intervalId = null;
             this.currentTypes = [];
+            this.lastClickTime = 0;
+            this.clickCooldown = 2000;
             this.initClickEvent();
         }
 
@@ -16,6 +18,14 @@
                 this.containerEl.style.cursor = 'pointer';
                 this.containerEl.title = '点击切换励志语';
                 this.containerEl.addEventListener('click', () => {
+                    const now = Date.now();
+                    if (now - this.lastClickTime < this.clickCooldown) {
+                        if (GaoKao.notice) {
+                            GaoKao.notice.show('更新失败，请勿频繁点击', 'error', 2000);
+                        }
+                        return;
+                    }
+                    this.lastClickTime = now;
                     this.fetchQuote();
                 });
             }

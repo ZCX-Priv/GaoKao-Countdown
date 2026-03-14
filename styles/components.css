@@ -7,7 +7,7 @@
     color: var(--text-color, #f5f5f7);
     cursor: pointer;
     opacity: 0.7;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: opacity 0.2s, transform 0.2s, color 0.3s ease;
     z-index: 20;
 }
 
@@ -190,7 +190,7 @@ input:checked + .slider:before {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.2s, color 0.3s ease;
     color: var(--text-color, #f5f5f7);
 }
 
@@ -238,6 +238,7 @@ input:checked + .slider:before {
     min-width: 80px;
     color: var(--text-color, #f5f5f7);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: color 0.3s ease;
 }
 
 .setting-item input[type="text"],
@@ -251,6 +252,7 @@ input:checked + .slider:before {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-color, #f5f5f7);
     text-align: center;
+    transition: color 0.3s ease;
 }
 
 #target-date::placeholder,
@@ -283,6 +285,7 @@ input:checked + .slider:before {
     font-style: italic;
     text-align: center;
     color: var(--text-color, #f5f5f7);
+    transition: color 0.3s ease;
 }
 
 .checkbox-group {
@@ -302,7 +305,7 @@ input:checked + .slider:before {
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid transparent;
-    transition: all 0.2s;
+    transition: all 0.2s, color 0.3s ease;
     margin: 4px;
     color: var(--text-color, #f5f5f7);
 }
@@ -348,6 +351,13 @@ body.no-animation .checkbox-label {
     transition: none;
 }
 
-body.no-animation .close-btn {
+body.no-animation .close-btn,
+body.no-animation .setting-item label:first-child,
+body.no-animation .setting-item input[type="text"],
+body.no-animation .setting-item input[type="number"],
+body.no-animation .setting-item input[type="date"],
+body.no-animation .setting-item input[type="time"],
+body.no-animation .setting-item select,
+body.no-animation .setting-hint {
     transition: none;
 }

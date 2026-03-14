@@ -12,6 +12,7 @@
     animation: slideDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     color: var(--text-color, #f5f5f7);
     margin: 5px 0;
+    transition: color 0.3s ease;
 }
 
 .notice-bubble.liquid-mode {
@@ -28,7 +29,7 @@
     cursor: pointer;
     color: var(--text-color, #f5f5f7);
     opacity: 0.5;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, color 0.3s ease;
 }
 
 .notice-close:hover {
@@ -59,6 +60,7 @@ body.no-animation .notice-bubble.closing {
     opacity: 0;
 }
 
+body.no-animation .notice-bubble,
 body.no-animation .notice-close {
     transition: none;
 }
