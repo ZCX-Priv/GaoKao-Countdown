@@ -49,6 +49,12 @@ body.no-animation .modal-overlay:not(.hidden) {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.modal-container::-webkit-scrollbar {
+    display: none;
 }
 
 .modal-overlay:not(.hidden):not(.closing) .modal-container {
