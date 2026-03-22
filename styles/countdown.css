@@ -206,8 +206,8 @@ body.no-animation #quote-author {
     padding: 20px 30px;
     border-radius: 15px;
     background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     position: relative;
