@@ -15,9 +15,10 @@
 
 .modal-overlay:not(.hidden):not(.closing) {
     pointer-events: auto;
+    opacity: 1;
 }
 
-.modal-overlay:not(.hidden):not(.closing):not(.no-animate) {
+.modal-overlay.opening {
     animation: overlayShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
@@ -54,11 +55,16 @@
     display: none;
 }
 
-.modal-overlay:not(.hidden):not(.closing):not(.no-animate) .modal-container {
+.modal-overlay:not(.hidden):not(.closing) .modal-container {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scale(1) translateY(0);
+}
+
+.modal-overlay.opening .modal-container {
     animation: genieShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.modal-overlay.hidden .modal-container,
 .modal-overlay.closing .modal-container {
     animation: genieHide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
@@ -68,6 +74,12 @@
     opacity: 1;
     clip-path: inset(0 0 0 0);
     transform: scale(1) translateY(0);
+}
+
+.modal-overlay.no-animate:not(.hidden):not(.closing) .modal-header h2,
+.modal-overlay.no-animate:not(.hidden):not(.closing) .close-btn,
+.modal-overlay.no-animate:not(.hidden):not(.closing) .modal-tabs .tab-btn {
+    transition: none;
 }
 
 .modal-container.liquid-mode {
@@ -154,11 +166,10 @@ body.no-animation .modal-tabs .tab-btn {
 
 .tab-pane.active {
     display: block;
-    animation: fadeIn 0.3s;
 }
 
-body.no-animation .tab-pane.active {
-    animation: none;
+.tab-pane.active.animate-in {
+    animation: fadeIn 0.3s;
 }
 
 body.no-animation .modal-header h2,

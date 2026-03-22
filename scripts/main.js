@@ -401,10 +401,18 @@
             
             this.dom.settingsBtn.addEventListener('click', () => {
                 this.dom.settingsModal.classList.remove('closing');
+                this.dom.settingsModal.classList.remove('opening');
                 const isAnimationEnabled = this.settingsManager.getSettings().enableAnimation;
+                const container = this.dom.settingsModal.querySelector('.modal-container');
                 if (isAnimationEnabled) {
                     this.dom.settingsModal.classList.remove('no-animate');
                     this.dom.settingsModal.classList.remove('hidden');
+                    this.dom.settingsModal.classList.add('opening');
+                    const onOpenAnimationEnd = () => {
+                        this.dom.settingsModal.classList.remove('opening');
+                        container.removeEventListener('animationend', onOpenAnimationEnd);
+                    };
+                    container.addEventListener('animationend', onOpenAnimationEnd, { once: true });
                 } else {
                     this.dom.settingsModal.classList.add('no-animate');
                     this.dom.settingsModal.classList.remove('hidden');
@@ -439,10 +447,12 @@
                 if (!isCurrentlyAnimateEnabled) {
                     this.dom.settingsModal.classList.add('hidden');
                     this.dom.settingsModal.classList.remove('no-animate');
+                    this.dom.settingsModal.classList.remove('opening');
                     return;
                 }
 
                 this.dom.settingsModal.classList.remove('no-animate');
+                this.dom.settingsModal.classList.remove('opening');
                 this.dom.settingsModal.classList.add('closing');
                 
                 const container = this.dom.settingsModal.querySelector('.modal-container');
@@ -460,10 +470,20 @@
             this.dom.tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     this.dom.tabs.forEach(t => t.classList.remove('active'));
-                    this.dom.panes.forEach(p => p.classList.remove('active'));
+                    this.dom.panes.forEach(p => {
+                        p.classList.remove('active');
+                        p.classList.remove('animate-in');
+                    });
                     
                     tab.classList.add('active');
-                    document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+                    const targetPane = document.getElementById(`tab-${tab.dataset.tab}`);
+                    targetPane.classList.add('active');
+                    if (isAnimationEnabled()) {
+                        targetPane.classList.add('animate-in');
+                        targetPane.addEventListener('animationend', () => {
+                            targetPane.classList.remove('animate-in');
+                        }, { once: true });
+                    }
                 });
             });
 
@@ -699,7 +719,7 @@
                     if (settings.enableAnimation) {
                         body.classList.remove('no-animation');
                         if (modalIsOpen) {
-                            this.dom.settingsModal.classList.add('no-animate');
+                            this.dom.settingsModal.classList.remove('no-animate');
                         }
                     } else {
                         body.classList.add('no-animation');
