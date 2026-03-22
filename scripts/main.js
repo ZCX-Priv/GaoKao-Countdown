@@ -401,11 +401,13 @@
             
             this.dom.settingsBtn.addEventListener('click', () => {
                 this.dom.settingsModal.classList.remove('closing');
-                if (isAnimationEnabled()) {
+                const isAnimationEnabled = this.settingsManager.getSettings().enableAnimation;
+                if (isAnimationEnabled) {
+                    this.dom.settingsModal.classList.remove('no-animate');
                     this.dom.settingsModal.classList.remove('hidden');
                 } else {
+                    this.dom.settingsModal.classList.add('no-animate');
                     this.dom.settingsModal.classList.remove('hidden');
-                    this.dom.settingsModal.classList.add('no-animation');
                 }
                 const settings = this.settingsManager.getSettings();
                 const textColor = settings.textColor === 'black' ? '#000000' : '#ffffff';
@@ -432,19 +434,21 @@
             });
 
             const closeSettingsHandler = () => {
-                if (!isAnimationEnabled()) {
+                const isCurrentlyAnimateEnabled = isAnimationEnabled();
+                
+                if (!isCurrentlyAnimateEnabled) {
                     this.dom.settingsModal.classList.add('hidden');
-                    this.dom.settingsModal.classList.remove('no-animation');
+                    this.dom.settingsModal.classList.remove('no-animate');
                     return;
                 }
 
+                this.dom.settingsModal.classList.remove('no-animate');
                 this.dom.settingsModal.classList.add('closing');
                 
                 const container = this.dom.settingsModal.querySelector('.modal-container');
                 const onAnimationEnd = () => {
                     this.dom.settingsModal.classList.remove('closing');
                     this.dom.settingsModal.classList.add('hidden');
-                    this.dom.settingsModal.classList.remove('no-animation'); // 清理
                     container.removeEventListener('animationend', onAnimationEnd);
                 };
                 
@@ -683,6 +687,9 @@
                 const hadNoAnimation = body.classList.contains('no-animation');
                 const willHaveNoAnimation = !settings.enableAnimation;
                 
+                const modalIsOpen = !this.dom.settingsModal.classList.contains('hidden') && 
+                                    !this.dom.settingsModal.classList.contains('closing');
+                
                 if (hadNoAnimation !== willHaveNoAnimation) {
                     body.style.transition = 'none';
                     appContainer.style.transition = 'none';
@@ -691,8 +698,14 @@
                     
                     if (settings.enableAnimation) {
                         body.classList.remove('no-animation');
+                        if (modalIsOpen) {
+                            this.dom.settingsModal.classList.add('no-animate');
+                        }
                     } else {
                         body.classList.add('no-animation');
+                        if (modalIsOpen) {
+                            this.dom.settingsModal.classList.add('no-animate');
+                        }
                     }
                     
                     requestAnimationFrame(() => {

@@ -14,22 +14,19 @@
 }
 
 .modal-overlay:not(.hidden):not(.closing) {
-    animation: overlayShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     pointer-events: auto;
+}
+
+.modal-overlay:not(.hidden):not(.closing):not(.no-animate) {
+    animation: overlayShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .modal-overlay.closing {
     animation: overlayHide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-body.no-animation .modal-overlay:not(.hidden):not(.closing),
-body.no-animation .modal-overlay.closing {
-    animation: none;
-}
-
-body.no-animation .modal-overlay:not(.hidden) {
+.modal-overlay.no-animate:not(.hidden) {
     opacity: 1;
-    pointer-events: auto;
 }
 
 .modal-container {
@@ -57,7 +54,7 @@ body.no-animation .modal-overlay:not(.hidden) {
     display: none;
 }
 
-.modal-overlay:not(.hidden):not(.closing) .modal-container {
+.modal-overlay:not(.hidden):not(.closing):not(.no-animate) .modal-container {
     animation: genieShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
@@ -66,8 +63,7 @@ body.no-animation .modal-overlay:not(.hidden) {
     animation: genieHide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-body.no-animation .modal-overlay:not(.hidden):not(.closing) .modal-container,
-body.no-animation .modal-overlay.closing .modal-container {
+.modal-overlay.no-animate:not(.hidden):not(.closing) .modal-container {
     animation: none !important;
     opacity: 1;
     clip-path: inset(0 0 0 0);
