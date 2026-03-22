@@ -80,6 +80,12 @@ body.no-animation .glass-card.switching {
     -webkit-backdrop-filter: none;
 }
 
+.quote-card.liquid-mode {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
 .card-header {
     margin-bottom: 30px;
 }
