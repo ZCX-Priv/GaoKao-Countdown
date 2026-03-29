@@ -806,6 +806,11 @@
                 } else {
                     this.dom.msContainer.classList.add('hidden');
                 }
+                
+                const timeValues = [this.dom.days, this.dom.hours, this.dom.minutes, this.dom.seconds, this.dom.milliseconds].filter(el => el);
+                timeValues.forEach(el => {
+                    el.classList.remove('urgent', 'ended');
+                });
             } else {
                 this.dom.days.parentElement.classList.remove('hidden');
                 const currentSettings = this.settingsManager.getSettings();
