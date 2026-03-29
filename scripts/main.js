@@ -425,7 +425,7 @@
             this.dom.fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
                     document.documentElement.requestFullscreen().catch(err => {
-                        this.noticeManager.show('无法进入全屏模式');
+                        this.noticeManager.show('无法进入全屏模式', 'error');
                     });
                 } else {
                     document.exitFullscreen();
