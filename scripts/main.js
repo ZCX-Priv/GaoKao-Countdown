@@ -812,13 +812,18 @@
                     el.classList.remove('urgent', 'ended');
                 });
             } else {
-                this.dom.days.parentElement.classList.remove('hidden');
                 const currentSettings = this.settingsManager.getSettings();
                 if (currentSettings.showMs) {
                     this.dom.msContainer.classList.remove('hidden');
                 }
                 
-                this.dom.days.textContent = String(data.days).padStart(2, '0');
+                if (data.days === 0) {
+                    this.dom.days.parentElement.classList.add('hidden');
+                } else {
+                    this.dom.days.parentElement.classList.remove('hidden');
+                    this.dom.days.textContent = String(data.days).padStart(2, '0');
+                }
+                
                 this.dom.hours.textContent = String(data.hours).padStart(2, '0');
                 this.dom.minutes.textContent = String(data.minutes).padStart(2, '0');
                 this.dom.seconds.textContent = String(data.seconds).padStart(2, '0');
