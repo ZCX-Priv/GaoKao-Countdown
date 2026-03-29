@@ -40,6 +40,11 @@
     background: rgba(255, 107, 107, 0.2);
 }
 
+[data-theme="dark"] .notice-bubble.error {
+    border-color: #8b3a3a;
+    background: rgba(139, 58, 58, 0.3);
+}
+
 .notice-bubble.closing {
     animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
