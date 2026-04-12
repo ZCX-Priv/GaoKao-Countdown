@@ -298,11 +298,42 @@
                 }
             };
 
-            const bgChanged = isInit || 
-                this.currentSettings.bgSource !== settings.bgSource || 
-                this.currentSettings.bgColor !== settings.bgColor;
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const themeChanged = this.currentSettings.themeMode !== settings.themeMode;
+            const bgSourceChanged = this.currentSettings.bgSource !== settings.bgSource;
+            const bgColorChanged = this.currentSettings.bgColor !== settings.bgColor;
+            
+            const bgChanged = isInit || bgSourceChanged || bgColorChanged;
+            const needUpdateGradient = isInit || themeChanged || bgSourceChanged || bgColorChanged;
+
+            if (settings.bgSource === 'color' && needUpdateGradient) {
+                const colorMap = {
+                    'blue': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                    'orange': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                    'purple': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+                    'green': 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)'
+                };
+                
+                const darkColorMap = {
+                    'blue': 'linear-gradient(135deg, #1a237e 0%, #880e4f 100%)',
+                    'orange': 'linear-gradient(135deg, #bf360c 0%, #4a148c 100%)',
+                    'purple': 'linear-gradient(135deg, #4a148c 0%, #1a237e 100%)',
+                    'green': 'linear-gradient(135deg, #004d40 0%, #0d47a1 100%)'
+                };
+                
+                const activeColorMap = isDark ? darkColorMap : colorMap;
+                document.body.style.backgroundImage = activeColorMap[settings.bgColor] || activeColorMap['blue'];
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
+                updateOverlayBg();
+            }
 
             if (bgChanged) {
+                const defaultGradient = isDark 
+                    ? 'linear-gradient(135deg, #1a237e 0%, #880e4f 100%)'
+                    : 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                
                 if (settings.bgSource === 'bing') {
                     const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
                     const img = new Image();
@@ -310,7 +341,7 @@
                         img.onload = null;
                         img.onerror = null;
                         img.src = '';
-                        document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                        document.body.style.backgroundImage = defaultGradient;
                         updateOverlayBg();
                     }, 5000);
                     img.onload = () => {
@@ -320,27 +351,15 @@
                     };
                     img.onerror = () => {
                         clearTimeout(timeoutId);
-                        document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                        document.body.style.backgroundImage = defaultGradient;
                         updateOverlayBg();
                     };
                     img.src = bgUrl;
                     document.body.style.backgroundSize = 'cover';
                     document.body.style.backgroundPosition = 'center';
                     document.body.style.backgroundAttachment = 'fixed';
-                } else if (settings.bgSource === 'color') {
-                    const colorMap = {
-                        'blue': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                        'orange': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                        'purple': 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
-                        'green': 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)'
-                    };
-                    document.body.style.backgroundImage = colorMap[settings.bgColor] || colorMap['blue'];
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundPosition = 'center';
-                    document.body.style.backgroundAttachment = 'fixed';
-                    updateOverlayBg();
-                } else {
-                    document.body.style.backgroundImage = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                } else if (settings.bgSource === 'none') {
+                    document.body.style.backgroundImage = defaultGradient;
                     document.body.style.backgroundSize = 'cover';
                     document.body.style.backgroundPosition = 'center';
                     document.body.style.backgroundAttachment = 'fixed';

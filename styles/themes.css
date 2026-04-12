@@ -6,6 +6,22 @@
     --loading-text-color: var(--text-dark);
 }
 
+[data-theme="dark"] .color-option.blue {
+    background: linear-gradient(135deg, #1a237e 0%, #880e4f 100%);
+}
+
+[data-theme="dark"] .color-option.orange {
+    background: linear-gradient(135deg, #bf360c 0%, #4a148c 100%);
+}
+
+[data-theme="dark"] .color-option.purple {
+    background: linear-gradient(135deg, #4a148c 0%, #1a237e 100%);
+}
+
+[data-theme="dark"] .color-option.green {
+    background: linear-gradient(135deg, #004d40 0%, #0d47a1 100%);
+}
+
 [data-theme="light"] {
     --bg-color: var(--bg-light);
     --text-color: var(--text-light);
