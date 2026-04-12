@@ -10,6 +10,10 @@
             this.currentTypes = [];
             this.lastClickTime = 0;
             this.clickCooldown = 2000;
+            this.isOnline = true;
+            this.quoteTypeSetting = document.querySelector('#quote-type-group')
+                ? document.querySelector('#quote-type-group').closest('.setting-item')
+                : null;
             this.initClickEvent();
         }
 
@@ -50,6 +54,16 @@
             if (this.intervalId) {
                 clearInterval(this.intervalId);
                 this.intervalId = null;
+            }
+        }
+
+        setQuoteTypeDisabled(disabled) {
+            if (this.quoteTypeSetting) {
+                if (disabled) {
+                    this.quoteTypeSetting.classList.add('disabled');
+                } else {
+                    this.quoteTypeSetting.classList.remove('disabled');
+                }
             }
         }
 
@@ -104,6 +118,8 @@
                             this.contentEl.textContent = data.hitokoto;
                             const author = data.from || data.from_who || data.creator;
                             this.authorEl.textContent = author && author !== '无' ? `—— ${author}` : '—— 匿名';
+                            this.isOnline = true;
+                            this.setQuoteTypeDisabled(false);
                         } else {
                             this.showLocalQuote();
                         }
@@ -119,6 +135,9 @@
         }
 
         showLocalQuote() {
+            this.isOnline = false;
+            this.setQuoteTypeDisabled(true);
+            
             const quotes = [
                 { content: "星光不问赶路人，时光不负有心人。", author: "佚名" },
                 { content: "乾坤未定，你我皆是黑马。", author: "佚名" },
