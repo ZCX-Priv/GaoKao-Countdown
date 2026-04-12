@@ -19,11 +19,11 @@
 }
 
 .modal-overlay.opening {
-    animation: overlayShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: overlayShow 0.26s ease-out forwards;
 }
 
 .modal-overlay.closing {
-    animation: overlayHide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: overlayHide 0.22s ease-in forwards;
 }
 
 .modal-overlay.no-animate:not(.hidden) {
@@ -43,7 +43,7 @@
     overflow: hidden;
     transform-origin: center center;
     opacity: 0;
-    clip-path: inset(0 0 100% 0);
+    transform: scale(0.88);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -57,23 +57,21 @@
 
 .modal-overlay:not(.hidden):not(.closing) .modal-container {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: scale(1) translateY(0);
+    transform: scale(1);
 }
 
 .modal-overlay.opening .modal-container {
-    animation: genieShow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: modalScaleIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .modal-overlay.closing .modal-container {
-    animation: genieHide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: modalScaleOut 0.22s ease-in forwards;
 }
 
 .modal-overlay.no-animate:not(.hidden):not(.closing) .modal-container {
     animation: none !important;
     opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: scale(1) translateY(0);
+    transform: scale(1);
 }
 
 .modal-overlay.no-animate:not(.hidden):not(.closing) .modal-header h2,
