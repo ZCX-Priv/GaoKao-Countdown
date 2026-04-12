@@ -532,6 +532,13 @@
                 }
             });
 
+           quoteAllCheckbox.addEventListener('click', (e) => {
+                if (!quoteAllCheckbox.checked) {
+                    e.preventDefault();
+                    quoteAllCheckbox.checked = true;
+                }
+            });
+
             quoteAllCheckbox.addEventListener('change', () => {
                 if (quoteAllCheckbox.checked) {
                     this.dom.quoteTypeCheckboxes.forEach(cb => {
