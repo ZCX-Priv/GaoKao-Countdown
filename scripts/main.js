@@ -34,17 +34,26 @@
         },
         eventName: {
             name: '事件名称',
-            getValue: function() { return this.dom.eventName.value.trim() || '高考'; },
-            validate: null
+            getValue: function() { return this.dom.eventName.value; },
+            validate: function(value) {
+                if (value.length > 0 && value.trim().length === 0) {
+                    return { valid: false, error: '事件名称不能只包含空格' };
+                }
+                return { valid: true, normalizedValue: value.trim() || '高考' };
+            }
         },
         targetDate: {
             name: '目标日期',
-            getValue: function() { return this.dom.targetDate.value.trim(); },
+            getValue: function() { return this.dom.targetDate.value; },
             validate: function(value) {
-                if (!value) {
+                if (value.length > 0 && value.trim().length === 0) {
+                    return { valid: false, error: '目标日期不能只包含空格' };
+                }
+                const trimmedValue = value.trim();
+                if (!trimmedValue) {
                     return { valid: true, normalizedValue: null };
                 }
-                const normalizedDateValue = value.replace(/／/g, '/').replace(/－/g, '-');
+                const normalizedDateValue = trimmedValue.replace(/／/g, '/').replace(/－/g, '-');
                 const dateRegex = /^(\d{1,4})\/(\d{1,2})\/(\d{1,2})$|^(\d{1,4})-(\d{1,2})-(\d{1,2})$/;
                 const match = normalizedDateValue.match(dateRegex);
                 if (!match) {
@@ -73,12 +82,16 @@
         },
         targetTime: {
             name: '目标时间',
-            getValue: function() { return this.dom.targetTime.value.trim(); },
+            getValue: function() { return this.dom.targetTime.value; },
             validate: function(value, context) {
-                if (!value) {
+                if (value.length > 0 && value.trim().length === 0) {
+                    return { valid: false, error: '目标时间不能只包含空格' };
+                }
+                const trimmedValue = value.trim();
+                if (!trimmedValue) {
                     return { valid: true, normalizedValue: '09:00' };
                 }
-                const normalizedTimeValue = value.replace(/：/g, ':').replace(/－/g, '-');
+                const normalizedTimeValue = trimmedValue.replace(/：/g, ':').replace(/－/g, '-');
                 const timeRegex = /^(\d{1,2}):(\d{1,2})$|^(\d{1,2})-(\d{1,2})$/;
                 const match = normalizedTimeValue.match(timeRegex);
                 if (!match) {
@@ -649,6 +662,9 @@
 
             const closeSettingsHandler = () => {
                 const isCurrentlyAnimateEnabled = isAnimationEnabled();
+                
+                const settings = this.settingsManager.getSettings();
+                this.syncSettingsUI(settings);
                 
                 if (!isCurrentlyAnimateEnabled) {
                     this.dom.settingsModal.classList.add('hidden');
