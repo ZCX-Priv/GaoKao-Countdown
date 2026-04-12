@@ -75,6 +75,37 @@
             this.applySettings();
         }
 
+        saveSingleSetting(key, value) {
+            try {
+                this.settings[key] = value;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(this.settings));
+                this.applySingleSetting(key, value);
+                return { success: true };
+            } catch (e) {
+                console.warn(`Failed to save setting ${key}:`, e);
+                return { success: false, error: e.message };
+            }
+        }
+
+        applySingleSetting(key, value) {
+            const html = document.documentElement;
+            
+            switch(key) {
+                case 'themeMode':
+                    if (value === 'system') {
+                        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                    } else {
+                        html.setAttribute('data-theme', value);
+                    }
+                    break;
+            }
+            
+            window.dispatchEvent(new CustomEvent('settingChanged', { 
+                detail: { key, value, settings: this.settings } 
+            }));
+        }
+
         applySettings() {
             const html = document.documentElement;
             

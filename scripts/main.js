@@ -3,6 +3,160 @@
 
     const { SettingsManager, Countdown, LoadingManager, QuoteManager, NoticeManager, SnowManager, DeviceManager } = GaoKao;
 
+    const SETTING_CONFIGS = {
+        themeMode: {
+            name: '主题模式',
+            getValue: function() {
+                const activeBtn = this.dom.themeMode.querySelector('.theme-icon-btn.active');
+                return activeBtn ? activeBtn.dataset.value : 'system';
+            },
+            validate: null
+        },
+        showMs: {
+            name: '毫秒显示',
+            getValue: function() { return this.dom.showMs.checked; },
+            validate: null
+        },
+        snowEffect: {
+            name: '下雪动效',
+            getValue: function() { return this.dom.snowEffect.checked; },
+            validate: null
+        },
+        liquidEffect: {
+            name: '通盈效果',
+            getValue: function() { return this.dom.liquidEffect.checked; },
+            validate: null
+        },
+        enableAnimation: {
+            name: '动画效果',
+            getValue: function() { return this.dom.enableAnimation.checked; },
+            validate: null
+        },
+        eventName: {
+            name: '事件名称',
+            getValue: function() { return this.dom.eventName.value.trim() || '高考'; },
+            validate: null
+        },
+        targetDate: {
+            name: '目标日期',
+            getValue: function() { return this.dom.targetDate.value.trim(); },
+            validate: function(value) {
+                if (!value) {
+                    return { valid: true, normalizedValue: null };
+                }
+                const normalizedDateValue = value.replace(/／/g, '/').replace(/－/g, '-');
+                const dateRegex = /^(\d{1,4})\/(\d{1,2})\/(\d{1,2})$|^(\d{1,4})-(\d{1,2})-(\d{1,2})$/;
+                const match = normalizedDateValue.match(dateRegex);
+                if (!match) {
+                    return { valid: false, error: '日期格式错误，请使用 年/月/日 或 年-月-日 格式' };
+                }
+                const year = match[1] ? Number(match[1]) : Number(match[4]);
+                const month = match[2] ? Number(match[2]) : Number(match[5]);
+                const day = match[3] ? Number(match[3]) : Number(match[6]);
+                if (year < 1900 || year > 9999) {
+                    return { valid: false, error: '年份无效，请输入1900-9999之间的年份' };
+                }
+                const dateObj = new Date(year, month - 1, day);
+                if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month - 1 || dateObj.getDate() !== day) {
+                    return { valid: false, error: '日期无效，请输入正确的日期' };
+                }
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const todayTimestamp = now.getTime();
+                const inputTimestamp = new Date(year, month - 1, day).getTime();
+                if (inputTimestamp < todayTimestamp) {
+                    return { valid: false, error: '日期必须晚于今天' };
+                }
+                const dateStr = `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}`;
+                return { valid: true, normalizedValue: dateStr };
+            }
+        },
+        targetTime: {
+            name: '目标时间',
+            getValue: function() { return this.dom.targetTime.value.trim(); },
+            validate: function(value, context) {
+                if (!value) {
+                    return { valid: true, normalizedValue: '09:00' };
+                }
+                const normalizedTimeValue = value.replace(/：/g, ':').replace(/－/g, '-');
+                const timeRegex = /^(\d{1,2}):(\d{1,2})$|^(\d{1,2})-(\d{1,2})$/;
+                const match = normalizedTimeValue.match(timeRegex);
+                if (!match) {
+                    return { valid: false, error: '时间格式错误，请使用 时:分 或 时-分 格式' };
+                }
+                const hours = match[1] ? Number(match[1]) : Number(match[3]);
+                const minutes = match[2] ? Number(match[2]) : Number(match[4]);
+                if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                    return { valid: false, error: '时间无效，请输入0-23时0-59分' };
+                }
+                const normalizedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                
+                if (context && context.targetDate) {
+                    const now = new Date();
+                    const todayStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+                    if (context.targetDate === todayStr) {
+                        const currentHours = now.getHours();
+                        const currentMinutes = now.getMinutes();
+                        if (hours < currentHours || (hours === currentHours && minutes <= currentMinutes)) {
+                            return { valid: false, error: '今天的时间必须晚于当前时间' };
+                        }
+                    }
+                }
+                
+                return { valid: true, normalizedValue: normalizedTime };
+            }
+        },
+        bgSource: {
+            name: '背景来源',
+            getValue: function() { return this.dom.bgSource.value; },
+            validate: null
+        },
+        bgColor: {
+            name: '背景颜色',
+            getValue: function() {
+                for (const radio of this.dom.bgColorRadios) {
+                    if (radio.checked) return radio.value;
+                }
+                return 'blue';
+            },
+            validate: null
+        },
+        quoteType: {
+            name: '语录类型',
+            getValue: function() {
+                const types = [];
+                for (const checkbox of this.dom.quoteTypeCheckboxes) {
+                    if (checkbox.checked) types.push(checkbox.value);
+                }
+                return types;
+            },
+            validate: function(value) {
+                if (!value || value.length === 0) {
+                    return { valid: false, error: '请至少选择一种语录类型' };
+                }
+                return { valid: true, normalizedValue: value };
+            }
+        },
+        textColor: {
+            name: '文字颜色',
+            getValue: function() {
+                for (const radio of this.dom.textColorRadios) {
+                    if (radio.checked) return radio.value;
+                }
+                return 'white';
+            },
+            validate: null
+        },
+        timeFormat: {
+            name: '时间制式',
+            getValue: function() {
+                const activeBtn = this.dom.timeFormat.querySelector('.theme-icon-btn.active');
+                return activeBtn ? activeBtn.dataset.value : '24h';
+            },
+            validate: null
+        }
+    };
+
     class LiquidManager {
         constructor() {
             this.overlay = document.getElementById('liquid-overlay');
@@ -373,6 +527,39 @@
             document.documentElement.style.setProperty('--text-color', textColor);
         }
 
+        createSettingHandler(settingKey) {
+            return () => {
+                if (this.isInitializing) return;
+                
+                const config = SETTING_CONFIGS[settingKey];
+                if (!config) return;
+                
+                const rawValue = config.getValue.call(this);
+                
+                if (config.validate) {
+                    const context = { targetDate: this.settingsManager.getSettings().targetDate };
+                    const result = config.validate.call(this, rawValue, context);
+                    if (!result.valid) {
+                        this.noticeManager.show(result.error, 'error');
+                        return;
+                    }
+                    const saveResult = this.settingsManager.saveSingleSetting(settingKey, result.normalizedValue);
+                    if (saveResult.success) {
+                        this.noticeManager.show(`${config.name}已保存`);
+                    } else {
+                        this.noticeManager.show(`${config.name}保存失败`, 'error');
+                    }
+                } else {
+                    const saveResult = this.settingsManager.saveSingleSetting(settingKey, rawValue);
+                    if (saveResult.success) {
+                        this.noticeManager.show(`${config.name}已保存`);
+                    } else {
+                        this.noticeManager.show(`${config.name}保存失败`, 'error');
+                    }
+                }
+            };
+        }
+
         bindEvents() {
             const settings = this.settingsManager.getSettings();
             const isAnimationEnabled = () => this.settingsManager.getSettings().enableAnimation;
@@ -512,6 +699,7 @@
                 } else {
                     this.dom.bgColorContainer.style.display = 'none';
                 }
+                this.createSettingHandler('bgSource')();
             });
 
             const quoteAllCheckbox = document.getElementById('quote-all');
@@ -528,6 +716,7 @@
                                 quoteAllCheckbox.checked = true;
                             }
                         }
+                        this.createSettingHandler('quoteType')();
                     });
                 }
             });
@@ -547,154 +736,23 @@
                         }
                     });
                 }
+                this.createSettingHandler('quoteType')();
             });
 
-            const saveHandler = () => {
-                if (this.isInitializing) return;
-                
-                const targetDateValue = this.dom.targetDate.value.trim();
-                const targetTimeValue = this.dom.targetTime.value.trim();
-                
-                let normalizedDate = '';
-                let normalizedTime = '';
+            this.dom.showMs.addEventListener('change', this.createSettingHandler('showMs'));
+            this.dom.snowEffect.addEventListener('change', this.createSettingHandler('snowEffect'));
+            this.dom.enableAnimation.addEventListener('change', this.createSettingHandler('enableAnimation'));
 
-                if (targetDateValue) {
-                    const normalizedDateValue = targetDateValue.replace(/／/g, '/').replace(/－/g, '-');
-                    const dateRegex = /^(\d{1,4})\/(\d{1,2})\/(\d{1,2})$|^(\d{1,4})-(\d{1,2})-(\d{1,2})$/;
-                    const match = normalizedDateValue.match(dateRegex);
-                    if (!match) {
-                        this.noticeManager.show('日期格式错误，请使用 年/月/日 或 年-月-日 格式', 'error');
-                        return;
-                    }
-                    const year = match[1] ? Number(match[1]) : Number(match[4]);
-                    const month = match[2] ? Number(match[2]) : Number(match[5]);
-                    const day = match[3] ? Number(match[3]) : Number(match[6]);
-                    if (year < 1900 || year > 9999) {
-                        this.noticeManager.show('年份无效，请输入1900-9999之间的年份', 'error');
-                        return;
-                    }
-                    const dateObj = new Date(year, month - 1, day);
-                    if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month - 1 || dateObj.getDate() !== day) {
-                        this.noticeManager.show('日期无效，请输入正确的日期', 'error');
-                        return;
-                    }
-                    const now = new Date();
-                    now.setHours(0, 0, 0, 0);
-                    const todayTimestamp = now.getTime();
-                    const inputTimestamp = new Date(year, month - 1, day).getTime();
-                    const isToday = inputTimestamp === todayTimestamp;
-                    if (inputTimestamp < todayTimestamp) {
-                        this.noticeManager.show('日期必须晚于今天', 'error');
-                        return;
-                    }
-                    const dateStr = `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}`;
-                    
-                    if (targetDateValue !== normalizedDateValue) {
-                        this.dom.targetDate.value = dateStr;
-                    }
-                    
-                    normalizedDate = dateStr;
-                }
-                
-                if (targetTimeValue) {
-                    const normalizedTimeValue = targetTimeValue.replace(/：/g, ':').replace(/－/g, '-');
-                    const timeRegex = /^(\d{1,2}):(\d{1,2})$|^(\d{1,2})-(\d{1,2})$/;
-                    const match = normalizedTimeValue.match(timeRegex);
-                    if (!match) {
-                        this.noticeManager.show('时间格式错误，请使用 时:分 或 时-分 格式', 'error');
-                        return;
-                    }
-                    const hours = match[1] ? Number(match[1]) : Number(match[3]);
-                    const minutes = match[2] ? Number(match[2]) : Number(match[4]);
-                    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-                        this.noticeManager.show('时间无效，请输入0-23时0-59分', 'error');
-                        return;
-                    }
-                    if (normalizedDate) {
-                        const now = new Date();
-                        const todayStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
-                        if (normalizedDate === todayStr) {
-                            const currentHours = now.getHours();
-                            const currentMinutes = now.getMinutes();
-                            if (hours < currentHours || (hours === currentHours && minutes <= currentMinutes)) {
-                                this.noticeManager.show('今天的时间必须晚于当前时间', 'error');
-                                return;
-                            }
-                        }
-                    }
-                    normalizedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                    
-                    if (targetTimeValue !== normalizedTimeValue) {
-                        this.dom.targetTime.value = normalizedTime;
-                    }
-                }
-                
-                let bgColor = 'blue';
-                for (const radio of this.dom.bgColorRadios) {
-                    if (radio.checked) {
-                        bgColor = radio.value;
-                        break;
-                    }
-                }
-
-                const quoteTypes = [];
-                for (const checkbox of this.dom.quoteTypeCheckboxes) {
-                    if (checkbox.checked) {
-                        quoteTypes.push(checkbox.value);
-                    }
-                }
-
-                const activeThemeBtn = this.dom.themeMode.querySelector('.theme-icon-btn.active');
-                const themeMode = activeThemeBtn ? activeThemeBtn.dataset.value : 'system';
-                
-                const activeTimeFormatBtn = this.dom.timeFormat.querySelector('.theme-icon-btn.active');
-                const timeFormat = activeTimeFormatBtn ? activeTimeFormatBtn.dataset.value : '24h';
-
-                const newSettings = {
-                    themeMode: themeMode,
-                    bgSource: this.dom.bgSource.value,
-                    bgColor: bgColor,
-                    quoteType: quoteTypes,
-                    showMs: this.dom.showMs.checked,
-                    snowEffect: this.dom.snowEffect.checked,
-                    liquidEffect: this.dom.liquidEffect.checked,
-                    enableAnimation: this.dom.enableAnimation.checked,
-                    eventName: this.dom.eventName.value || '高考',
-                    targetDate: normalizedDate || null,
-                    targetTime: normalizedTime || '09:00',
-                    timeFormat: timeFormat,
-                    textColor: (() => {
-                        for (const radio of this.dom.textColorRadios) {
-                            if (radio.checked) return radio.value;
-                        }
-                        return 'white';
-                    })()
-                };
-                this.settingsManager.saveSettings(newSettings);
-                
-                this.noticeManager.show('设置已保存');
-            };
-
-            const inputs = [
-                this.dom.bgSource, 
-                this.dom.showMs, this.dom.snowEffect,
-                this.dom.liquidEffect, this.dom.enableAnimation
-            ];
-            
-            inputs.forEach(input => {
-                input.addEventListener('change', saveHandler);
-            });
-
-            this.dom.eventName.addEventListener('blur', saveHandler);
-            this.dom.targetDate.addEventListener('change', saveHandler);
-            this.dom.targetTime.addEventListener('change', saveHandler);
+            this.dom.eventName.addEventListener('blur', this.createSettingHandler('eventName'));
+            this.dom.targetDate.addEventListener('change', this.createSettingHandler('targetDate'));
+            this.dom.targetTime.addEventListener('change', this.createSettingHandler('targetTime'));
 
             const themeBtns = this.dom.themeMode.querySelectorAll('.theme-icon-btn');
             themeBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     themeBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    saveHandler();
+                    this.createSettingHandler('themeMode')();
                 });
             });
 
@@ -703,85 +761,112 @@
                 btn.addEventListener('click', () => {
                     timeFormatBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    saveHandler();
+                    this.createSettingHandler('timeFormat')();
                 });
             });
 
             this.dom.bgColorRadios.forEach(radio => {
-                radio.addEventListener('change', saveHandler);
-                radio.addEventListener('blur', saveHandler);
+                radio.addEventListener('change', this.createSettingHandler('bgColor'));
             });
 
             this.dom.textColorRadios.forEach(radio => {
-                radio.addEventListener('change', saveHandler);
-            });
-
-            this.dom.quoteTypeCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', saveHandler);
+                radio.addEventListener('change', this.createSettingHandler('textColor'));
             });
 
             this.dom.liquidEffect.addEventListener('change', () => {
                 this.updateThemeModeState(this.dom.liquidEffect.checked);
+                this.createSettingHandler('liquidEffect')();
             });
 
-            window.addEventListener('settingsChanged', (e) => {
-                const settings = e.detail;
+            window.addEventListener('settingChanged', (e) => {
+                const { key, value, settings } = e.detail;
                 
-                const body = document.body;
-                const appContainer = this.dom.appContainer;
-                const loadingPage = this.dom.loadingPage;
-                const hadNoAnimation = body.classList.contains('no-animation');
-                const willHaveNoAnimation = !settings.enableAnimation;
-                
-                const modalIsOpen = !this.dom.settingsModal.classList.contains('hidden') && 
-                                    !this.dom.settingsModal.classList.contains('closing');
-                
-                if (hadNoAnimation !== willHaveNoAnimation) {
-                    body.style.transition = 'none';
-                    appContainer.style.transition = 'none';
-                    appContainer.style.animation = 'none';
-                    loadingPage.style.transition = 'none';
-                    
-                    if (settings.enableAnimation) {
-                        body.classList.remove('no-animation');
-                        if (modalIsOpen) {
-                            this.dom.settingsModal.classList.remove('no-animate');
-                        }
-                    } else {
-                        body.classList.add('no-animation');
-                        if (modalIsOpen) {
-                            this.dom.settingsModal.classList.add('no-animate');
-                        }
-                    }
-                    
-                    requestAnimationFrame(() => {
-                        body.style.transition = '';
-                        appContainer.style.transition = '';
-                        appContainer.style.animation = '';
-                        loadingPage.style.transition = '';
-                    });
-                }
-                
-                const targetDate = settings.targetDate ? new Date(`${settings.targetDate.replace(/\//g, '-')}T${settings.targetTime}`) : null;
-                this.countdown.setTarget(targetDate, settings.eventName);
-                this.countdown.start(settings.showMs);
-                
-                this.applyVisualSettings(settings);
-                
-                if (settings.showMs) {
-                    this.dom.msContainer.classList.remove('hidden');
-                } else {
-                    this.dom.msContainer.classList.add('hidden');
-                }
-
-                const quoteTypeChanged = !this.currentSettings || 
-                    JSON.stringify(this.currentSettings.quoteType) !== JSON.stringify(settings.quoteType);
-                if (quoteTypeChanged) {
-                    this.quoteManager.load(settings.quoteType);
+                switch(key) {
+                    case 'enableAnimation':
+                        this.handleAnimationChange(value);
+                        break;
+                    case 'targetDate':
+                    case 'targetTime':
+                    case 'eventName':
+                        this.handleTargetChange(settings);
+                        break;
+                    case 'showMs':
+                        this.handleShowMsChange(value);
+                        break;
+                    case 'quoteType':
+                        this.handleQuoteTypeChange(value);
+                        break;
+                    case 'snowEffect':
+                    case 'liquidEffect':
+                    case 'bgSource':
+                    case 'bgColor':
+                    case 'textColor':
+                        this.applyVisualSettings(settings);
+                        break;
                 }
                 
                 this.currentSettings = { ...settings };
             });
+        }
+
+        handleAnimationChange(enabled) {
+            const body = document.body;
+            const appContainer = this.dom.appContainer;
+            const loadingPage = this.dom.loadingPage;
+            const hadNoAnimation = body.classList.contains('no-animation');
+            const willHaveNoAnimation = !enabled;
+            
+            const modalIsOpen = !this.dom.settingsModal.classList.contains('hidden') && 
+                                !this.dom.settingsModal.classList.contains('closing');
+            
+            if (hadNoAnimation !== willHaveNoAnimation) {
+                body.style.transition = 'none';
+                appContainer.style.transition = 'none';
+                appContainer.style.animation = 'none';
+                loadingPage.style.transition = 'none';
+                
+                if (enabled) {
+                    body.classList.remove('no-animation');
+                    if (modalIsOpen) {
+                        this.dom.settingsModal.classList.remove('no-animate');
+                    }
+                } else {
+                    body.classList.add('no-animation');
+                    if (modalIsOpen) {
+                        this.dom.settingsModal.classList.add('no-animate');
+                    }
+                }
+                
+                requestAnimationFrame(() => {
+                    body.style.transition = '';
+                    appContainer.style.transition = '';
+                    appContainer.style.animation = '';
+                    loadingPage.style.transition = '';
+                });
+            }
+        }
+
+        handleTargetChange(settings) {
+            const targetDate = settings.targetDate ? new Date(`${settings.targetDate.replace(/\//g, '-')}T${settings.targetTime}`) : null;
+            this.countdown.setTarget(targetDate, settings.eventName);
+            this.countdown.start(settings.showMs);
+        }
+
+        handleShowMsChange(enabled) {
+            if (enabled) {
+                this.dom.msContainer.classList.remove('hidden');
+            } else {
+                this.dom.msContainer.classList.add('hidden');
+            }
+            this.countdown.start(enabled);
+        }
+
+        handleQuoteTypeChange(value) {
+            const quoteTypeChanged = !this.currentSettings || 
+                JSON.stringify(this.currentSettings.quoteType) !== JSON.stringify(value);
+            if (quoteTypeChanged) {
+                this.quoteManager.load(value);
+            }
         }
 
         updateUI(data) {
