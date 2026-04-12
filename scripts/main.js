@@ -382,9 +382,9 @@
             this.dom.snowEffect.checked = settings.snowEffect;
             this.dom.liquidEffect.checked = settings.liquidEffect;
             this.dom.enableAnimation.checked = settings.enableAnimation;
-            this.dom.eventName.value = settings.eventName;
+            this.dom.eventName.value = (settings.eventName && settings.eventName !== '高考') ? settings.eventName : '';
             this.dom.targetDate.value = settings.targetDate || '';
-            this.dom.targetTime.value = settings.targetTime || '09:00';
+            this.dom.targetTime.value = (settings.targetTime && settings.targetTime !== '09:00') ? settings.targetTime : '';
             
             for (const radio of this.dom.bgColorRadios) {
                 if (radio.value === settings.bgColor) {
