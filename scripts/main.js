@@ -811,6 +811,7 @@
                     case 'bgSource':
                     case 'bgColor':
                     case 'textColor':
+                    case 'themeMode':
                         this.applyVisualSettings(settings);
                         break;
                 }
