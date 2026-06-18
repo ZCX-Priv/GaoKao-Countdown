@@ -271,6 +271,7 @@
             this.currentSettings = null;
             
             this.isInitializing = true;
+            this.bingLoaded = false;
 
             this.dom = {
                 app: document.getElementById('app'),
@@ -337,33 +338,9 @@
                 this.loadingManager.setLoaded();
             });
             
-            this.waitForBgLoaded();
-            
             setTimeout(() => {
                 this.loadingManager.checkAndFinish();
             }, 2000);
-        }
-
-        waitForBgLoaded() {
-            const settings = this.settingsManager.getSettings();
-            if (settings.bgSource !== 'bing') return;
-            const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
-            const img = new Image();
-            const timeoutId = setTimeout(() => {
-                img.onload = null;
-                img.onerror = null;
-                img.src = '';
-                document.body.style.backgroundImage = '';
-            }, 5000);
-            img.onload = () => {
-                clearTimeout(timeoutId);
-                document.body.style.backgroundImage = `url('${bgUrl}')`;
-            };
-            img.onerror = () => {
-                clearTimeout(timeoutId);
-                document.body.style.backgroundImage = '';
-            };
-            img.src = bgUrl;
         }
 
         syncSettingsUI(settings) {
@@ -472,6 +449,9 @@
             
             const bgChanged = isInit || bgSourceChanged || bgColorChanged;
             const needUpdateGradient = isInit || themeChanged || bgSourceChanged || bgColorChanged;
+            const defaultGradient = isDark 
+                ? 'linear-gradient(135deg, #1a237e 0%, #880e4f 100%)'
+                : 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
 
             if (settings.bgSource === 'color' && needUpdateGradient) {
                 const colorMap = {
@@ -496,12 +476,16 @@
                 updateOverlayBg();
             }
 
-            if (bgChanged) {
-                const defaultGradient = isDark 
-                    ? 'linear-gradient(135deg, #1a237e 0%, #880e4f 100%)'
-                    : 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
-                
-                if (settings.bgSource === 'bing') {
+            if (settings.bgSource === 'bing') {
+                if (bgChanged) {
+                    // 初始化或背景源改变：立即设置默认渐变作为加载期间背景，再加载 Bing 图片
+                    document.body.style.backgroundImage = defaultGradient;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    this.bingLoaded = false;
+                    updateOverlayBg();
+                    
                     const bgUrl = 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN';
                     const img = new Image();
                     const timeoutId = setTimeout(() => {
@@ -509,29 +493,39 @@
                         img.onerror = null;
                         img.src = '';
                         document.body.style.backgroundImage = defaultGradient;
+                        this.bingLoaded = false;
                         updateOverlayBg();
                     }, 5000);
                     img.onload = () => {
                         clearTimeout(timeoutId);
                         document.body.style.backgroundImage = `url('${bgUrl}')`;
+                        this.bingLoaded = true;
                         updateOverlayBg();
                     };
                     img.onerror = () => {
                         clearTimeout(timeoutId);
                         document.body.style.backgroundImage = defaultGradient;
+                        this.bingLoaded = false;
                         updateOverlayBg();
                     };
                     img.src = bgUrl;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundPosition = 'center';
-                    document.body.style.backgroundAttachment = 'fixed';
-                } else if (settings.bgSource === 'none') {
+                } else if (themeChanged && !this.bingLoaded) {
+                    // 主题改变但 Bing 未加载成功：更新默认渐变以匹配新主题
                     document.body.style.backgroundImage = defaultGradient;
                     document.body.style.backgroundSize = 'cover';
                     document.body.style.backgroundPosition = 'center';
                     document.body.style.backgroundAttachment = 'fixed';
                     updateOverlayBg();
                 }
+                // 若主题改变但 Bing 已加载成功，保持 Bing 图片不变（Bing 图片与主题无关）
+            }
+
+            if (settings.bgSource === 'none' && (bgChanged || themeChanged)) {
+                document.body.style.backgroundImage = defaultGradient;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
+                updateOverlayBg();
             }
 
             const countdownDisplay = document.querySelector('.countdown-display');

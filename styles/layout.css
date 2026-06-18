@@ -32,6 +32,7 @@
     text-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
     margin-bottom: 10px;
     transition: color 0.3s ease;
+    position: relative;
 }
 
 .header-decoration {
