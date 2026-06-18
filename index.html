@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" spellcheck="false">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +15,38 @@
     <link rel="stylesheet" href="styles/countdown.css">
     <link rel="stylesheet" href="styles/modal.css">
     <link rel="stylesheet" href="styles/notice.css">
+    <script>
+    (function() {
+        try {
+            var stored = localStorage.getItem('gaokao_countdown_settings');
+            var themeMode = 'system';
+            if (stored) {
+                var settings = JSON.parse(stored);
+                if (settings.themeMode) themeMode = settings.themeMode;
+            }
+            if (themeMode === 'system') {
+                themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', themeMode);
+        } catch (e) {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    })();
+    </script>
+    <style>
+        #loading-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+            background: #f5f5f7;
+        }
+        [data-theme="dark"] #loading-page {
+            background: #000000;
+        }
+    </style>
 </head>
 <body>
     <!-- SVG 滤镜 -->
