@@ -35,17 +35,6 @@
     position: relative;
 }
 
-.header-decoration {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-    opacity: 0.3;
-}
-
 #notice-container {
     position: fixed;
     top: 20px;
